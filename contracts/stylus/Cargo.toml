@@ -1,0 +1,18 @@
+[package]
+name = "aquaflow-router"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+stylus-sdk = "0.4.2"
+hex = "0.4.3"
+
+[features]
+export-abi = ["stylus-sdk/export-abi"]
+
+[[bin]]
+name = "aquaflow-router"
+path = "src/main.rs"
+
+[lib]
+crate-type = ["cdylib"]
