@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
 import { Header } from '@/components/layout/Header';
+import { NetworkIndicator } from '@/components/abstraction/NetworkIndicator';
 import { cn } from '@/lib/utils';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -41,6 +42,11 @@ export default function RootLayout({
             <main className="flex-1">
               {children}
             </main>
+            
+            {/* Floating Network Indicator */}
+            <div className="fixed bottom-4 right-4 z-40">
+              <NetworkIndicator />
+            </div>
           </div>
         </Providers>
       </body>

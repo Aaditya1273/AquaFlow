@@ -19,7 +19,7 @@ export function Header({ className }: HeaderProps) {
   
   const navigation = [
     { name: 'Swap', href: '/', icon: Zap },
-    { name: 'Analytics', href: '/analytics', icon: BarChart3 },
+    { name: 'Visualizer', href: '/visualizer', icon: BarChart3 },
     { name: 'Settings', href: '/settings', icon: Settings },
   ];
   
