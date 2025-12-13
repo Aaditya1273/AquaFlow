@@ -1,34 +1,50 @@
 'use client';
 
 import '@rainbow-me/rainbowkit/styles.css';
-import { getDefaultWallets, RainbowKitProvider } from '@rainbow-me/rainbowkit';
-import { configureChains, createConfig, WagmiConfig } from 'wagmi';
-import { arbitrum, arbitrumGoerli } from 'wagmi/chains';
-import { publicProvider } from 'wagmi/providers/public';
+import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+import { WagmiConfig } from 'wagmi';
+import { wagmiConfig, chains } from '@/lib/wagmi';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Toaster } from 'react-hot-toast';
 
-const { chains, publicClient } = configureChains(
-  [arbitrum, arbitrumGoerli],
-  [publicProvider()]
-);
-
-const { connectors } = getDefaultWallets({
-  appName: 'AquaFlow',
-  projectId: 'YOUR_PROJECT_ID', // Replace with actual WalletConnect project ID
-  chains,
-});
-
-const wagmiConfig = createConfig({
-  autoConnect: true,
-  connectors,
-  publicClient,
+// React Query client
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      cacheTime: 1000 * 60 * 10, // 10 minutes
+    },
+  },
 });
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <WagmiConfig config={wagmiConfig}>
-      <RainbowKitProvider chains={chains}>
-        {children}
-      </RainbowKitProvider>
-    </WagmiConfig>
+    <QueryClientProvider client={queryClient}>
+      <WagmiConfig config={wagmiConfig}>
+        <RainbowKitProvider 
+          chains={chains}
+          theme={darkTheme({
+            accentColor: '#28A0F0',
+            accentColorForeground: 'white',
+            borderRadius: 'medium',
+            fontStack: 'system',
+          })}
+          showRecentTransactions={true}
+        >
+          {children}
+          <Toaster
+            position="bottom-right"
+            toastOptions={{
+              duration: 4000,
+              style: {
+                background: '#1F2937',
+                color: '#F9FAFB',
+                border: '1px solid #374151',
+              },
+            }}
+          />
+        </RainbowKitProvider>
+      </WagmiConfig>
+    </QueryClientProvider>
   );
 }
