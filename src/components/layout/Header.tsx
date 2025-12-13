@@ -18,9 +18,8 @@ export function Header({ className }: HeaderProps) {
   const { chainInfo, isSupported } = useChainDetection();
   
   const navigation = [
-    { name: 'Swap', href: '/', icon: Zap },
-    { name: 'Visualizer', href: '/visualizer', icon: BarChart3 },
-    { name: 'Settings', href: '/settings', icon: Settings },
+    { name: 'Demo', href: '/demo', icon: Zap },
+    { name: 'Benchmark', href: '/', icon: BarChart3 },
   ];
   
   return (
