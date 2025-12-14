@@ -34,11 +34,11 @@ AquaFlow is the **first intent-based liquidity router** that makes DeFi feel lik
 
 ```mermaid
 graph TB
-    A[👤 User Intent<br/>"Swap 100 USDC to USDT"] --> B[🧠 AI Parser<br/>95% Confidence]
-    B --> C[🔍 Route Discovery<br/>47 Pools Scanned]
-    C --> D[🦀 Stylus Router<br/>76% Gas Savings]
-    D --> E[⚡ Execution<br/>15 Seconds]
-    E --> F[✅ Settlement<br/>Cross-Chain Magic]
+    A["👤 User Intent: Swap 100 USDC to USDT"] --> B["🧠 AI Parser: 95% Confidence"]
+    B --> C["🔍 Route Discovery: 47 Pools Scanned"]
+    C --> D["🦀 Stylus Router: 76% Gas Savings"]
+    D --> E["⚡ Execution: 15 Seconds"]
+    E --> F["✅ Settlement: Cross-Chain Magic"]
     
     style A fill:#e1f5fe
     style D fill:#f3e5f5
@@ -58,27 +58,27 @@ graph TB
 ```mermaid
 flowchart LR
     subgraph "Frontend Layer"
-        A[Chat Interface<br/>Natural Language]
-        B[Real-Time Visualizer<br/>Transaction Flow]
-        C[Gas Benchmark<br/>Performance Metrics]
+        A["Chat Interface: Natural Language"]
+        B["Real-Time Visualizer: Transaction Flow"]
+        C["Gas Benchmark: Performance Metrics"]
     end
     
     subgraph "Intent Processing"
-        D[Intent Parser<br/>NLP → Structured Data]
-        E[Route Optimizer<br/>Multi-Chain Pathfinding]
-        F[Security Validator<br/>Anti-MEV Protection]
+        D["Intent Parser: NLP to Structured Data"]
+        E["Route Optimizer: Multi-Chain Pathfinding"]
+        F["Security Validator: Anti-MEV Protection"]
     end
     
     subgraph "Execution Layer"
-        G[Stylus Router<br/>🦀 Rust Core]
-        H[Solidity Wrapper<br/>EVM Compatibility]
-        I[Pool Registry<br/>Liquidity Sources]
+        G["🦀 Stylus Router: Rust Core"]
+        H["Solidity Wrapper: EVM Compatibility"]
+        I["Pool Registry: Liquidity Sources"]
     end
     
     subgraph "Arbitrum Ecosystem"
-        J[Arbitrum One<br/>Main Settlement]
-        K[Arbitrum Nova<br/>Low-Cost Execution]
-        L[Orbit L3<br/>Custom Chains]
+        J["Arbitrum One: Main Settlement"]
+        K["Arbitrum Nova: Low-Cost Execution"]
+        L["Orbit L3: Custom Chains"]
     end
     
     A --> D
@@ -148,16 +148,16 @@ sequenceDiagram
     participant S as 🦀 Stylus
     participant B as 🔗 Blockchain
     
-    U->>F: "Swap 100 USDC to USDT"
+    U->>F: Swap 100 USDC to USDT
     F->>P: Parse Intent
-    P->>P: NLP Processing (95% confidence)
+    P->>P: NLP Processing 95% confidence
     P->>S: Optimized Route Request
     S->>S: Multi-chain pathfinding
     S->>B: Execute Transaction
     B->>F: Real-time Events
-    F->>U: ✅ Swap Complete (76% gas saved)
+    F->>U: ✅ Swap Complete 76% gas saved
     
-    Note over U,B: 15 seconds total • $0.88 cost • Zero complexity
+    Note over U,B: 15 seconds total, $0.88 cost, Zero complexity
 ```
 
 ---
@@ -210,25 +210,25 @@ pie title Security Audit Results
 gantt
     title AquaFlow Development Roadmap
     dateFormat  YYYY-MM-DD
-    section Phase 1: Foundation
+    section Phase 1 Foundation
     Stylus Router Core        :done, foundation, 2024-12-01, 2024-12-15
     Intent-Based Frontend     :done, frontend, 2024-12-01, 2024-12-15
     Security Hardening        :done, security, 2024-12-10, 2024-12-15
     
-    section Phase 2: Integration (Q1 2025)
+    section Phase 2 Integration Q1 2025
     Real DEX Integrations     :integration, 2024-12-16, 2025-03-31
     Cross-Chain Bridges       :bridges, 2024-12-16, 2025-03-31
     Production Orbit L3       :orbit, 2025-01-01, 2025-03-31
     
-    section Phase 3: Scale (Q2-Q3 2025)
+    section Phase 3 Scale Q2-Q3 2025
     Solver Marketplace        :solvers, 2025-04-01, 2025-09-30
     SDK for Builders          :sdk, 2025-04-01, 2025-09-30
     DAO Governance            :dao, 2025-07-01, 2025-09-30
     
-    section Phase 4: Ecosystem (Q4 2025)
+    section Phase 4 Ecosystem Q4 2025
     Multi-Chain Expansion     :expansion, 2025-10-01, 2025-12-31
     Enterprise Integrations   :enterprise, 2025-10-01, 2025-12-31
-    $100M TVL Target         :milestone, 2025-12-31, 2025-12-31
+    100M TVL Target          :milestone, 2025-12-31, 2025-12-31
 ```
 
 ### **💰 Funding Milestones**
