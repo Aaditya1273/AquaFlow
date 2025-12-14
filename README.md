@@ -1,5 +1,7 @@
 # 🌊 AquaFlow
 **The Future of DeFi: Intent-Based Liquidity Router for Arbitrum Ecosystem**
+<img width="1919" height="866" alt="image" src="https://github.com/user-attachments/assets/f58231a2-825b-4bf7-9eaa-1ce3150e3e1f" />
+
 
 <div align="center">
 
