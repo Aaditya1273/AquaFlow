@@ -32,18 +32,8 @@ AquaFlow is the **first intent-based liquidity router** that makes DeFi feel lik
 - **Risk Assessment** - Real-time analysis of pool safety and slippage protection
 - **Educational Insights** - AI explains complex DeFi concepts in simple terms
 
-```mermaid
-graph TB
-    A["👤 User Intent: Swap 100 USDC to USDT"] --> B["🧠 AI Parser: 95% Confidence"]
-    B --> C["🔍 Route Discovery: 47 Pools Scanned"]
-    C --> D["🦀 Stylus Router: 76% Gas Savings"]
-    D --> E["⚡ Execution: 15 Seconds"]
-    E --> F["✅ Settlement: Cross-Chain Magic"]
-    
-    style A fill:#e1f5fe
-    style D fill:#f3e5f5
-    style F fill:#e8f5e8
-```
+<img width="256" height="584" alt="Screenshot 2025-12-14 112436" src="https://github.com/user-attachments/assets/4cf8b276-cce9-4d57-88d8-39e3f26f0b60" />
+
 
 ### **🎪 The Magic**
 - **Natural Language**: "Swap 100 USDC to USDT" → Done
@@ -55,47 +45,8 @@ graph TB
 
 ## �️ **Techdnical Architecture**
 
-```mermaid
-flowchart LR
-    subgraph "Frontend Layer"
-        A["Chat Interface: Natural Language"]
-        B["Real-Time Visualizer: Transaction Flow"]
-        C["Gas Benchmark: Performance Metrics"]
-    end
-    
-    subgraph "Intent Processing"
-        D["Intent Parser: NLP to Structured Data"]
-        E["Route Optimizer: Multi-Chain Pathfinding"]
-        F["Security Validator: Anti-MEV Protection"]
-    end
-    
-    subgraph "Execution Layer"
-        G["🦀 Stylus Router: Rust Core"]
-        H["Solidity Wrapper: EVM Compatibility"]
-        I["Pool Registry: Liquidity Sources"]
-    end
-    
-    subgraph "Arbitrum Ecosystem"
-        J["Arbitrum One: Main Settlement"]
-        K["Arbitrum Nova: Low-Cost Execution"]
-        L["Orbit L3: Custom Chains"]
-    end
-    
-    A --> D
-    B --> E
-    C --> F
-    D --> G
-    E --> H
-    F --> I
-    G --> J
-    H --> K
-    I --> L
-    
-    style G fill:#f3e5f5
-    style J fill:#e3f2fd
-    style K fill:#fff3e0
-    style L fill:#f1f8e9
-```
+<img width="1113" height="357" alt="image" src="https://github.com/user-attachments/assets/fab6776b-d0c3-42f1-9a89-86b7f0af15c9" />
+
 
 ---
 
@@ -140,25 +91,7 @@ flowchart LR
 
 ## 🚀 **Live Demo Workflow**
 
-```mermaid
-sequenceDiagram
-    participant U as 👤 User
-    participant F as 🖥️ Frontend
-    participant P as 🧠 Parser
-    participant S as 🦀 Stylus
-    participant B as 🔗 Blockchain
-    
-    U->>F: Swap 100 USDC to USDT
-    F->>P: Parse Intent
-    P->>P: NLP Processing 95% confidence
-    P->>S: Optimized Route Request
-    S->>S: Multi-chain pathfinding
-    S->>B: Execute Transaction
-    B->>F: Real-time Events
-    F->>U: ✅ Swap Complete 76% gas saved
-    
-    Note over U,B: 15 seconds total, $0.88 cost, Zero complexity
-```
+<img width="1002" height="576" alt="image" src="https://github.com/user-attachments/assets/74171643-d7c7-48e1-8290-14f2704568d8" />
 
 ---
 
@@ -170,14 +103,11 @@ sequenceDiagram
 - **Input Validation** - Comprehensive parameter checking
 - **Economic Security** - Circuit breakers, volume limits, slippage protection
 - **Emergency Controls** - Pause mechanisms, timelock withdrawals
-
+---
 ### **📋 Audit Results**
-```mermaid
-pie title Security Audit Results
-    "Secure" : 95
-    "Minor Issues Fixed" : 5
-```
+<img width="507" height="372" alt="image" src="https://github.com/user-attachments/assets/775d27b9-95c6-4591-a5bd-5a9c0fa3ce8c" />
 
+---
 **🎯 Production Ready**: Comprehensive test suite, formal verification ready, bug bounty prepared
 
 ---
@@ -205,32 +135,9 @@ pie title Security Audit Results
 ---
 
 ## 🛣️ **Roadmap to $100M TVL**
+<img width="1626" height="416" alt="image" src="https://github.com/user-attachments/assets/c846c7dc-4def-4dea-bd91-ae40a50ff622" />
 
-```mermaid
-gantt
-    title AquaFlow Development Roadmap
-    dateFormat  YYYY-MM-DD
-    section Phase 1 Foundation
-    Stylus Router Core        :done, foundation, 2024-12-01, 2024-12-15
-    Intent-Based Frontend     :done, frontend, 2024-12-01, 2024-12-15
-    Security Hardening        :done, security, 2024-12-10, 2024-12-15
-    
-    section Phase 2 Integration Q1 2025
-    Real DEX Integrations     :integration, 2024-12-16, 2025-03-31
-    Cross-Chain Bridges       :bridges, 2024-12-16, 2025-03-31
-    Production Orbit L3       :orbit, 2025-01-01, 2025-03-31
-    
-    section Phase 3 Scale Q2-Q3 2025
-    Solver Marketplace        :solvers, 2025-04-01, 2025-09-30
-    SDK for Builders          :sdk, 2025-04-01, 2025-09-30
-    DAO Governance            :dao, 2025-07-01, 2025-09-30
-    
-    section Phase 4 Ecosystem Q4 2025
-    Multi-Chain Expansion     :expansion, 2025-10-01, 2025-12-31
-    Enterprise Integrations   :enterprise, 2025-10-01, 2025-12-31
-    100M TVL Target          :milestone, 2025-12-31, 2025-12-31
-```
-
+---
 ### **💰 Funding Milestones**
 - **$50K Seed**: Complete Phase 2 integrations
 - **$250K Series A**: Launch production with $10M TVL
