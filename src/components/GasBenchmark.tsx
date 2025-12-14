@@ -215,189 +215,110 @@ export default function GasBenchmark() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <Card className="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border-yellow-500/20">
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <BarChart3 className="h-6 w-6 text-yellow-400" />
-              <span className="text-white">Performance Benchmark Dashboard</span>
-              <span className="text-sm text-yellow-300 bg-yellow-500/20 px-3 py-1 rounded-full">
-                Stylus vs Solidity
-              </span>
-            </div>
-            
-            <Button
-              onClick={() => setIsLive(!isLive)}
-              variant={isLive ? "default" : "outline"}
-              size="sm"
-            >
-              <Activity className="h-4 w-4 mr-2" />
-              {isLive ? 'Live' : 'Static'}
-            </Button>
-          </CardTitle>
-        </CardHeader>
-      </Card>
+
+
       
-      {/* Metric Selector */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {[
-          { key: 'gas', label: 'Gas Usage', icon: Flame, color: 'text-red-400' },
-          { key: 'time', label: 'Execution Time', icon: Clock, color: 'text-blue-400' },
-          { key: 'memory', label: 'Memory Usage', icon: MemoryStick, color: 'text-green-400' },
-          { key: 'cost', label: 'Cost (USD)', icon: DollarSign, color: 'text-yellow-400' },
-        ].map((metric) => (
-          <motion.button
-            key={metric.key}
-            onClick={() => setSelectedMetric(metric.key as any)}
-            className={`p-4 rounded-lg border transition-all ${
-              selectedMetric === metric.key
-                ? 'bg-white/10 border-white/30 ring-2 ring-blue-500'
-                : 'bg-white/5 border-white/10 hover:bg-white/10'
-            }`}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <div className={`${metric.color} mb-2 flex justify-center`}>
-              <metric.icon className="h-6 w-6" />
-            </div>
-            <div className="text-sm font-medium text-white">
-              {metric.label}
-            </div>
-            <div className="text-xs text-gray-400 mt-1">
-              {averages[metric.key as keyof typeof averages].toFixed(1)}% avg savings
-            </div>
-          </motion.button>
-        ))}
-      </div>
-      
-      {/* Live Performance Chart */}
-      {isLive && liveData.length > 0 && (
-        <Card className="bg-gray-900/50 border-gray-700">
-          <CardHeader>
-            <CardTitle className="text-white flex items-center space-x-2">
-              <Activity className="h-5 w-5 text-green-400" />
-              <span>Live Performance Monitor</span>
-              <div className="h-2 w-2 bg-green-400 rounded-full animate-pulse" />
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-32 flex items-end space-x-1">
-              {liveData.map((value, index) => (
-                <motion.div
-                  key={index}
-                  className="bg-gradient-to-t from-blue-600 to-blue-400 rounded-t flex-1 min-w-0"
-                  initial={{ height: 0 }}
-                  animate={{ height: `${value}%` }}
-                  transition={{ duration: 0.5 }}
-                />
-              ))}
-            </div>
-            <div className="text-center mt-2 text-sm text-gray-400">
-              Real-time gas savings: {liveData[liveData.length - 1]?.toFixed(1)}%
-            </div>
-          </CardContent>
-        </Card>
-      )}
-      
-      {/* Detailed Benchmarks */}
-      <div className="grid gap-4">
-        {benchmarkData.map((item, index) => (
+      {/* Spacious Performance Cards */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {benchmarkData.slice(0, 3).map((item, index) => (
           <motion.div
             key={item.operation}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.1 }}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.15 }}
+            whileHover={{ scale: 1.03, y: -8 }}
+            className="group"
           >
-            <Card className="bg-white/5 border-white/10">
-              <CardContent className="p-6">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h4 className="text-lg font-semibold text-white mb-1">
-                      {item.operation}
-                    </h4>
-                    <p className="text-sm text-gray-400">
-                      {item.description}
-                    </p>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <TrendingDown className="h-5 w-5 text-green-400" />
-                    <span className="text-xl font-bold text-green-400">
+            <Card className="bg-gradient-to-br from-white/10 to-white/5 border-white/20 hover:border-green-400/40 transition-all duration-500 h-full backdrop-blur-xl">
+              <CardContent className="p-8 h-full flex flex-col">
+                {/* Header Section */}
+                <div className="text-center mb-8">
+                  <h3 className="text-2xl font-bold text-white mb-4">
+                    {item.operation}
+                  </h3>
+                  <div className="flex items-center justify-center space-x-3 mb-6">
+                    <TrendingDown className="h-8 w-8 text-green-400" />
+                    <span className="text-5xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
                       {getMetricSavings(item, selectedMetric).toFixed(1)}%
                     </span>
-                    <span className="text-sm text-gray-400">savings</span>
                   </div>
+                  <p className="text-sm text-blue-200/80 leading-relaxed max-w-xs mx-auto">
+                    {item.description}
+                  </p>
                 </div>
                 
-                <div className="space-y-3">
-                  {/* Solidity Bar */}
-                  <div className="flex items-center space-x-4">
-                    <div className="w-20 text-sm text-gray-400 flex items-center">
-                      <Cpu className="h-4 w-4 mr-2" />
-                      Solidity
+                {/* Performance Comparison */}
+                <div className="space-y-6 mb-8 flex-1">
+                  {/* Solidity Performance */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <Cpu className="h-5 w-5 text-red-400" />
+                        <span className="text-lg font-semibold text-red-400">Solidity</span>
+                      </div>
+                      <span className="text-lg font-mono text-white">
+                        {getMetricValue(item, selectedMetric, 'solidity')}
+                      </span>
                     </div>
-                    <div className="flex-1 bg-gray-700 rounded-full h-3 relative overflow-hidden">
+                    <div className="bg-gray-800 rounded-xl h-4 relative overflow-hidden">
                       <motion.div
-                        className="bg-gradient-to-r from-red-500 to-red-600 h-full rounded-full"
+                        className="bg-gradient-to-r from-red-500 via-red-400 to-red-600 h-full rounded-xl shadow-lg shadow-red-500/30"
                         initial={{ width: 0 }}
                         animate={{ width: '100%' }}
-                        transition={{ delay: index * 0.1 + 0.5, duration: 0.8 }}
+                        transition={{ delay: index * 0.15 + 0.5, duration: 1, ease: "easeOut" }}
                       />
-                    </div>
-                    <div className="w-24 text-sm text-white text-right font-mono">
-                      {getMetricValue(item, selectedMetric, 'solidity')}
                     </div>
                   </div>
                   
-                  {/* Stylus Bar */}
-                  <div className="flex items-center space-x-4">
-                    <div className="w-20 text-sm text-blue-400 flex items-center">
-                      <Zap className="h-4 w-4 mr-2" />
-                      Stylus
+                  {/* Stylus Performance */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <Zap className="h-5 w-5 text-blue-400" />
+                        <span className="text-lg font-semibold text-blue-400">Stylus</span>
+                      </div>
+                      <span className="text-lg font-mono text-white">
+                        {getMetricValue(item, selectedMetric, 'stylus')}
+                      </span>
                     </div>
-                    <div className="flex-1 bg-gray-700 rounded-full h-3 relative overflow-hidden">
+                    <div className="bg-gray-800 rounded-xl h-4 relative overflow-hidden">
                       <motion.div
-                        className="bg-gradient-to-r from-blue-500 to-blue-600 h-full rounded-full"
+                        className="bg-gradient-to-r from-blue-500 via-cyan-400 to-blue-600 h-full rounded-xl shadow-lg shadow-blue-500/30"
                         initial={{ width: 0 }}
                         animate={{ 
-                          width: `${(getMetricSavings(item, selectedMetric) / 100) * 100}%` 
+                          width: `${100 - getMetricSavings(item, selectedMetric)}%` 
                         }}
-                        transition={{ delay: index * 0.1 + 0.7, duration: 0.8 }}
+                        transition={{ delay: index * 0.15 + 0.8, duration: 1, ease: "easeOut" }}
                       />
-                    </div>
-                    <div className="w-24 text-sm text-white text-right font-mono">
-                      {getMetricValue(item, selectedMetric, 'stylus')}
                     </div>
                   </div>
                 </div>
                 
-                {/* Additional Metrics */}
-                <div className="mt-4 pt-4 border-t border-gray-700">
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
-                    <div className="text-center">
-                      <div className="text-gray-400 mb-1">Gas Saved</div>
-                      <div className="text-green-400 font-semibold">
-                        {(item.solidity.gas - item.stylus.gas).toLocaleString()}
-                      </div>
+                {/* Detailed Metrics */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-4 bg-gradient-to-br from-green-500/20 to-green-600/10 rounded-xl border border-green-500/30">
+                    <div className="text-2xl font-bold text-green-400 mb-1">
+                      {(item.solidity.gas - item.stylus.gas).toLocaleString()}
                     </div>
-                    <div className="text-center">
-                      <div className="text-gray-400 mb-1">Time Saved</div>
-                      <div className="text-blue-400 font-semibold">
-                        {(item.solidity.executionTime - item.stylus.executionTime).toFixed(1)}s
-                      </div>
+                    <div className="text-xs text-green-300/80 uppercase tracking-wide">Gas Saved</div>
+                  </div>
+                  <div className="text-center p-4 bg-gradient-to-br from-blue-500/20 to-blue-600/10 rounded-xl border border-blue-500/30">
+                    <div className="text-2xl font-bold text-blue-400 mb-1">
+                      {(item.solidity.executionTime - item.stylus.executionTime).toFixed(1)}s
                     </div>
-                    <div className="text-center">
-                      <div className="text-gray-400 mb-1">Memory Saved</div>
-                      <div className="text-purple-400 font-semibold">
-                        {(item.solidity.memoryUsage - item.stylus.memoryUsage).toFixed(1)}MB
-                      </div>
+                    <div className="text-xs text-blue-300/80 uppercase tracking-wide">Time Saved</div>
+                  </div>
+                  <div className="text-center p-4 bg-gradient-to-br from-purple-500/20 to-purple-600/10 rounded-xl border border-purple-500/30">
+                    <div className="text-2xl font-bold text-purple-400 mb-1">
+                      {(item.solidity.memoryUsage - item.stylus.memoryUsage).toFixed(1)}MB
                     </div>
-                    <div className="text-center">
-                      <div className="text-gray-400 mb-1">Cost Saved</div>
-                      <div className="text-yellow-400 font-semibold">
-                        ${(item.solidity.costUSD - item.stylus.costUSD).toFixed(2)}
-                      </div>
+                    <div className="text-xs text-purple-300/80 uppercase tracking-wide">Memory Saved</div>
+                  </div>
+                  <div className="text-center p-4 bg-gradient-to-br from-yellow-500/20 to-yellow-600/10 rounded-xl border border-yellow-500/30">
+                    <div className="text-2xl font-bold text-yellow-400 mb-1">
+                      ${(item.solidity.costUSD - item.stylus.costUSD).toFixed(2)}
                     </div>
+                    <div className="text-xs text-yellow-300/80 uppercase tracking-wide">Cost Saved</div>
                   </div>
                 </div>
               </CardContent>
@@ -405,123 +326,7 @@ export default function GasBenchmark() {
           </motion.div>
         ))}
       </div>
-      
-      {/* Summary Statistics */}
-      <Card className="bg-gradient-to-r from-green-500/10 to-blue-500/10 border-green-500/20">
-        <CardContent className="p-6">
-          <div className="text-center mb-6">
-            <h3 className="text-2xl font-bold text-white mb-2">
-              Overall Performance Impact
-            </h3>
-            <p className="text-gray-300">
-              Stylus delivers consistent performance improvements across all operations
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-red-400 mb-2">
-                {averages.gas.toFixed(1)}%
-              </div>
-              <div className="text-sm text-gray-400">
-                Average Gas Savings
-              </div>
-            </div>
-            
-            <div className="text-center">
-              <div className="text-3xl font-bold text-blue-400 mb-2">
-                {averages.time.toFixed(1)}%
-              </div>
-              <div className="text-sm text-gray-400">
-                Average Time Savings
-              </div>
-            </div>
-            
-            <div className="text-center">
-              <div className="text-3xl font-bold text-green-400 mb-2">
-                {averages.memory.toFixed(1)}%
-              </div>
-              <div className="text-sm text-gray-400">
-                Average Memory Savings
-              </div>
-            </div>
-            
-            <div className="text-center">
-              <div className="text-3xl font-bold text-yellow-400 mb-2">
-                {averages.cost.toFixed(1)}%
-              </div>
-              <div className="text-sm text-gray-400">
-                Average Cost Savings
-              </div>
-            </div>
-          </div>
-          
-          <div className="mt-6 text-center">
-            <div className="inline-flex items-center space-x-2 bg-white/10 rounded-full px-4 py-2">
-              <Target className="h-4 w-4 text-green-400" />
-              <span className="text-sm text-white">
-                Stylus consistently outperforms Solidity across all metrics
-              </span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-      
-      {/* Technical Details */}
-      <Card className="bg-gray-900/50 border-gray-700">
-        <CardHeader>
-          <CardTitle className="text-white">
-            Why Stylus Outperforms Solidity
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid md:grid-cols-2 gap-6 text-sm text-gray-300">
-            <div>
-              <h4 className="font-semibold text-white mb-3">Rust Advantages</h4>
-              <ul className="space-y-2">
-                <li className="flex items-start space-x-2">
-                  <div className="h-1.5 w-1.5 bg-blue-400 rounded-full mt-2 flex-shrink-0" />
-                  <span>Zero-cost abstractions reduce runtime overhead</span>
-                </li>
-                <li className="flex items-start space-x-2">
-                  <div className="h-1.5 w-1.5 bg-green-400 rounded-full mt-2 flex-shrink-0" />
-                  <span>Memory safety without garbage collection</span>
-                </li>
-                <li className="flex items-start space-x-2">
-                  <div className="h-1.5 w-1.5 bg-purple-400 rounded-full mt-2 flex-shrink-0" />
-                  <span>Compile-time optimizations</span>
-                </li>
-                <li className="flex items-start space-x-2">
-                  <div className="h-1.5 w-1.5 bg-yellow-400 rounded-full mt-2 flex-shrink-0" />
-                  <span>Efficient data structures and algorithms</span>
-                </li>
-              </ul>
-            </div>
-            
-            <div>
-              <h4 className="font-semibold text-white mb-3">WASM Benefits</h4>
-              <ul className="space-y-2">
-                <li className="flex items-start space-x-2">
-                  <div className="h-1.5 w-1.5 bg-red-400 rounded-full mt-2 flex-shrink-0" />
-                  <span>Near-native execution speed</span>
-                </li>
-                <li className="flex items-start space-x-2">
-                  <div className="h-1.5 w-1.5 bg-blue-400 rounded-full mt-2 flex-shrink-0" />
-                  <span>Smaller bytecode size</span>
-                </li>
-                <li className="flex items-start space-x-2">
-                  <div className="h-1.5 w-1.5 bg-green-400 rounded-full mt-2 flex-shrink-0" />
-                  <span>Better instruction-level parallelism</span>
-                </li>
-                <li className="flex items-start space-x-2">
-                  <div className="h-1.5 w-1.5 bg-purple-400 rounded-full mt-2 flex-shrink-0" />
-                  <span>Optimized memory layout</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+
     </div>
   );
 }

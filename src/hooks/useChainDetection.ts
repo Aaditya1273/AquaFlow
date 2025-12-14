@@ -1,32 +1,37 @@
 // Elite Chain Detection Hook - Auto-switch to supported Arbitrum chains
 import { useEffect } from 'react';
-import { useNetwork, useSwitchNetwork } from 'wagmi';
+import { useChainId, useSwitchChain } from 'wagmi';
 import { toast } from 'react-hot-toast';
-import { chainUtils } from '@/lib/utils';
-import { CHAIN_INFO } from '@/lib/constants';
+
+// Simplified chain info for the hook
+const CHAIN_INFO = {
+  42161: { name: 'Arbitrum One', icon: '🔵', color: '#28A0F0', fees: 'Low' },
+  42170: { name: 'Arbitrum Nova', icon: '🟠', color: '#FF6B35', fees: 'Ultra Low' },
+  421614: { name: 'Arbitrum Sepolia', icon: '🟡', color: '#FFC107', fees: 'Testnet' },
+} as const;
 
 export function useChainDetection() {
-  const { chain } = useNetwork();
-  const { switchNetwork, isLoading: isSwitching } = useSwitchNetwork();
+  const chainId = useChainId();
+  const { switchChain, isPending: isSwitching } = useSwitchChain();
   
-  const isSupported = chain ? chainUtils.isSupported(chain.id) : false;
-  const chainInfo = chain ? CHAIN_INFO[chain.id as keyof typeof CHAIN_INFO] : null;
+  const isSupported = chainId ? Object.keys(CHAIN_INFO).includes(chainId.toString()) : false;
+  const chainInfo = chainId ? CHAIN_INFO[chainId as keyof typeof CHAIN_INFO] : null;
   
   // Auto-switch to Arbitrum One if on unsupported chain
   useEffect(() => {
-    if (chain && !isSupported && switchNetwork) {
+    if (chainId && !isSupported && switchChain) {
       toast.error(
-        `${chain.name} is not supported. Switching to Arbitrum One...`,
+        `Chain ${chainId} is not supported. Switching to Arbitrum One...`,
         { id: 'chain-switch' }
       );
       
-      switchNetwork(42161); // Arbitrum One
+      switchChain({ chainId: 42161 }); // Arbitrum One
     }
-  }, [chain, isSupported, switchNetwork]);
+  }, [chainId, isSupported, switchChain]);
   
   // Success notification when switching to supported chain
   useEffect(() => {
-    if (chain && isSupported && chainInfo) {
+    if (chainId && isSupported && chainInfo) {
       toast.success(
         `Connected to ${chainInfo.name} ${chainInfo.icon}`,
         { 
@@ -35,22 +40,22 @@ export function useChainDetection() {
         }
       );
     }
-  }, [chain?.id, isSupported, chainInfo]);
+  }, [chainId, isSupported, chainInfo]);
   
-  const switchToChain = (chainId: number) => {
-    if (switchNetwork && chainId !== chain?.id) {
-      const targetChain = CHAIN_INFO[chainId as keyof typeof CHAIN_INFO];
+  const switchToChain = (targetChainId: number) => {
+    if (switchChain && targetChainId !== chainId) {
+      const targetChain = CHAIN_INFO[targetChainId as keyof typeof CHAIN_INFO];
       toast.loading(
         `Switching to ${targetChain?.name}...`,
         { id: 'manual-switch' }
       );
       
-      switchNetwork(chainId);
+      switchChain({ chainId: targetChainId });
     }
   };
   
   return {
-    currentChain: chain,
+    currentChainId: chainId,
     isSupported,
     chainInfo,
     isSwitching,

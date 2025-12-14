@@ -1,0 +1,85 @@
+{
+  "pools": {
+    "1": {
+      "id": 1,
+      "address": "0x1111111111111111111111111111111111111111",
+      "tokenA": "0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d",
+      "tokenB": "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
+      "reserveA": "1000000000000",
+      "reserveB": "1000000000000",
+      "fee": 30,
+      "poolType": 0,
+      "chainId": 421614,
+      "isActive": true,
+      "lastUpdated": 1734168000,
+      "name": "USDC/USDT Stable Pool",
+      "stats": {
+        "tvlUSD": 2000000,
+        "volume24hUSD": 500000,
+        "fees24hUSD": 150,
+        "priceImpact1k": 22,
+        "utilizationRate": 65
+      }
+    },
+    "2": {
+      "id": 2,
+      "address": "0x2222222222222222222222222222222222222222",
+      "tokenA": "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+      "tokenB": "0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d",
+      "reserveA": "500000000000000000000",
+      "reserveB": "1000000000000",
+      "fee": 30,
+      "poolType": 0,
+      "chainId": 421614,
+      "isActive": true,
+      "lastUpdated": 1734168000,
+      "name": "ETH/USDC Major Pool",
+      "stats": {
+        "tvlUSD": 2000000,
+        "volume24hUSD": 1000000,
+        "fees24hUSD": 300,
+        "priceImpact1k": 22,
+        "utilizationRate": 78
+      }
+    },
+    "3": {
+      "id": 3,
+      "address": "0x3333333333333333333333333333333333333333",
+      "tokenA": "0x912CE59144191C1204E64559FE8253a0e49E6548",
+      "tokenB": "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+      "reserveA": "1000000000000000000000000",
+      "reserveB": "500000000000000000000",
+      "fee": 30,
+      "poolType": 0,
+      "chainId": 421614,
+      "isActive": true,
+      "lastUpdated": 1734168000,
+      "name": "ARB/ETH Pool",
+      "stats": {
+        "tvlUSD": 1000000,
+        "volume24hUSD": 200000,
+        "fees24hUSD": 60,
+        "priceImpact1k": 31,
+        "utilizationRate": 45
+      }
+    }
+  },
+  "pairMappings": {
+    "0x75faf114eafb1bdbe2f0316df893fd58ce46aa4d-0x1f9840a85d5af5bf1d1762f925bdaddc4201f984": [1],
+    "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984-0x75faf114eafb1bdbe2f0316df893fd58ce46aa4d": [1],
+    "0x82af49447d8a07e3bd95bd0d56f35241523fbab1-0x75faf114eafb1bdbe2f0316df893fd58ce46aa4d": [2],
+    "0x75faf114eafb1bdbe2f0316df893fd58ce46aa4d-0x82af49447d8a07e3bd95bd0d56f35241523fbab1": [2],
+    "0x912ce59144191c1204e64559fe8253a0e49e6548-0x82af49447d8a07e3bd95bd0d56f35241523fbab1": [3],
+    "0x82af49447d8a07e3bd95bd0d56f35241523fbab1-0x912ce59144191c1204e64559fe8253a0e49e6548": [3]
+  },
+  "chainPools": {
+    "421614": [1, 2, 3],
+    "42161": [],
+    "42170": []
+  },
+  "stats": {
+    "totalPools": 3,
+    "totalTVL": 5000000,
+    "totalVolume24h": 1700000
+  }
+}

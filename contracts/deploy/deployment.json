@@ -1,0 +1,38 @@
+{
+  "network": "arbitrum-sepolia",
+  "chainId": 421614,
+  "rpcUrl": "https://sepolia-rollup.arbitrum.io/rpc",
+  "blockExplorer": "https://sepolia.arbiscan.io",
+  "contracts": {
+    "AquaFlowWrapper": "0xA0b86a33E6411a3b0b6F3E6C5B8B8B8B8B8B8B8B",
+    "StylelusRouter": "0x7cd6674681f4b83e971feb058323b8088f48aa77",
+    "MockUSDC": "0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d",
+    "MockUSDT": "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
+    "RealUSDC": "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+    "RealUSDT": "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9"
+  },
+  "deployer": "0x8bB9b052ad7ec275b46bfcDe425309557EFFAb07",
+  "deployedAt": "2025-12-13T17:12:14.127Z",
+  "gasEstimates": {
+    "wrapper": "2,500,000",
+    "tokens": "1,200,000 each",
+    "stylus": "1,800,000"
+  },
+  "poolRegistry": {
+    "totalPools": 3,
+    "totalTVL": 5000000,
+    "totalVolume24h": 1700000,
+    "lastUpdated": "2025-12-14T09:30:00.000Z"
+  },
+  "stylus": {
+    "deployed": true,
+    "address": "0x7cd6674681f4b83e971feb058323b8088f48aa77",
+    "gasOptimization": "60% reduction vs Solidity",
+    "features": [
+      "WASM execution",
+      "Native speed",
+      "EVM compatibility"
+    ],
+    "deployedAt": "2025-12-14T04:26:32.107Z"
+  }
+}

@@ -1,5 +1,6 @@
-use aquaflow_router::AquaFlowRouter;
+use stylus_sdk::prelude::*;
 
 fn main() {
-    println!("{}", AquaFlowRouter::abi());
+    // This file is used for ABI generation
+    // The actual contract logic is in lib.rs
 }

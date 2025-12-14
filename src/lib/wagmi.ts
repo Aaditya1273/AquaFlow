@@ -1,50 +1,61 @@
-// Elite Wagmi Configuration - Production-grade Web3 setup
-import { getDefaultWallets } from '@rainbow-me/rainbowkit';
-import { configureChains, createConfig } from 'wagmi';
-import { arbitrum, arbitrumGoerli, arbitrumSepolia } from 'wagmi/chains';
-import { publicProvider } from 'wagmi/providers/public';
-import { alchemyProvider } from 'wagmi/providers/alchemy';
-import { infuraProvider } from 'wagmi/providers/infura';
+// Elite Wagmi Configuration - Perfect Arbitrum Integration
+import { getDefaultConfig } from '@rainbow-me/rainbowkit';
+import { arbitrum, arbitrumNova, arbitrumSepolia, mainnet, polygon } from 'wagmi/chains';
 
-// Custom Orbit L3 chain for demo
-const orbitL3 = {
-  id: 421337,
-  name: 'AquaFlow Demo L3',
-  network: 'aquaflow-l3',
-  nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
-  rpcUrls: {
-    default: { http: ['http://localhost:8547'] },
-    public: { http: ['http://localhost:8547'] },
-  },
-  blockExplorers: {
-    default: { name: 'Demo Explorer', url: 'http://localhost:4000' },
-  },
-  testnet: true,
-} as const;
-
-// Provider hierarchy for reliability
-const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [arbitrum, arbitrumSepolia, arbitrumGoerli, orbitL3],
-  [
-    alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_KEY || 'demo' }),
-    infuraProvider({ apiKey: process.env.NEXT_PUBLIC_INFURA_KEY || 'demo' }),
-    publicProvider(),
-  ]
-);
-
-// Wallet configuration
-const { connectors } = getDefaultWallets({
+// Optimized Wagmi configuration for seamless UX
+export const wagmiConfig = getDefaultConfig({
   appName: 'AquaFlow',
-  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'demo',
-  chains,
+  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'demo-project-id',
+  chains: [
+    arbitrum,           // Primary: Arbitrum One
+    arbitrumNova,       // Arbitrum Nova
+    arbitrumSepolia,    // Testnet
+    mainnet,            // Ethereum (for broader compatibility)
+    polygon,            // Polygon (popular L2)
+  ],
+  ssr: true,
 });
 
-// Wagmi client configuration
-export const wagmiConfig = createConfig({
-  autoConnect: true,
-  connectors,
-  publicClient,
-  webSocketPublicClient,
-});
+// Export chains for RainbowKit
+export const chains = [arbitrum, arbitrumNova, arbitrumSepolia, mainnet, polygon];
 
-export { chains };
+// Smart network switching with user-friendly UX
+export const switchToArbitrum = async () => {
+  try {
+    if (typeof window !== 'undefined' && window.ethereum) {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: '0xa4b1' }], // Arbitrum One
+      });
+      return true;
+    }
+  } catch (error: any) {
+    // Auto-add Arbitrum if not in wallet
+    if (error.code === 4902 && typeof window !== 'undefined' && window.ethereum) {
+      try {
+        await window.ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [{
+            chainId: '0xa4b1',
+            chainName: 'Arbitrum One',
+            nativeCurrency: {
+              name: 'Ether',
+              symbol: 'ETH',
+              decimals: 18,
+            },
+            rpcUrls: ['https://arb1.arbitrum.io/rpc'],
+            blockExplorerUrls: ['https://arbiscan.io/'],
+            iconUrls: ['https://arbitrum.io/logo.png'],
+          }],
+        });
+        return true;
+      } catch (addError) {
+        console.error('Failed to add Arbitrum network:', addError);
+        return false;
+      }
+    }
+    console.error('Failed to switch to Arbitrum:', error);
+    return false;
+  }
+  return false;
+};

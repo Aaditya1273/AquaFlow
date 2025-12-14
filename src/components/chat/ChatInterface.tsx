@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { formatNumber, formatTime } from '@/lib/utils';
 import { toast } from 'react-hot-toast';
+import { initializeAI, getAI, type SwapIntent, type GeminiResponse } from '@/lib/gemini';
 
 interface Message {
   id: string;
@@ -38,10 +39,18 @@ export function ChatInterface() {
     {
       id: '1',
       type: 'assistant',
-      content: "👋 Hi! I'm AquaFlow AI. Tell me what you want to swap and I'll find the best route across all Arbitrum chains.",
+      content: "👋 Hi! I'm AquaFlow AI powered by Gemini. Tell me what you want to swap and I'll find the best route across all Arbitrum chains with intelligent analysis.",
       timestamp: Date.now() - 1000,
     }
   ]);
+  
+  // Initialize Gemini AI
+  useEffect(() => {
+    const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+    if (apiKey && apiKey !== 'your_gemini_api_key_here') {
+      initializeAI(apiKey);
+    }
+  }, []);
   
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -90,55 +99,114 @@ export function ChatInterface() {
     setInput('');
     setIsTyping(true);
     
-    // Simulate AI thinking
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
     try {
       // Add processing message
       const processingId = addMessage({
         type: 'assistant',
-        content: "🧠 Understanding your intent...",
+        content: "🧠 Analyzing your intent with Gemini AI...",
       });
       
-      // Solve the intent
-      await solveIntent(intentText);
-      
-      if (solverState.error) {
-        updateMessage(processingId, {
-          content: `❌ ${solverState.error}`,
-        });
-        return;
-      }
-      
-      if (solverState.parsedIntent && solverState.optimalRoute) {
-        const { parsedIntent, optimalRoute } = solverState;
+      const ai = getAI();
+      if (ai) {
+        // Use Gemini AI to parse intent
+        const aiResponse: GeminiResponse = await ai.parseIntent(intentText);
         
-        // Update with success message
-        updateMessage(processingId, {
-          content: `✅ Perfect! I found the optimal route for your swap.`,
-        });
+        if (aiResponse.intent) {
+          // Update with AI explanation
+          updateMessage(processingId, {
+            content: `✅ ${aiResponse.explanation}`,
+          });
+          
+          // Add AI suggestions if any
+          if (aiResponse.suggestions.length > 0) {
+            addMessage({
+              type: 'assistant',
+              content: `💡 AI Insights:\n${aiResponse.suggestions.map(s => `• ${s}`).join('\n')}`,
+            });
+          }
+          
+          // Solve the intent using AI-parsed data
+          await solveIntent(intentText, aiResponse.intent);
+          
+          if (solverState.optimalRoute) {
+            // Add route details
+            addMessage({
+              type: 'system',
+              content: 'route-details',
+              data: {
+                intent: aiResponse.intent,
+                route: solverState.optimalRoute,
+              },
+            });
+            
+            // Get AI route analysis
+            const routeAnalysis = await ai.analyzeRoute(
+              aiResponse.intent.tokenIn,
+              aiResponse.intent.tokenOut,
+              aiResponse.intent.amount
+            );
+            
+            addMessage({
+              type: 'assistant',
+              content: `🔍 AI Route Analysis:\n${routeAnalysis}`,
+            });
+            
+            // Add execution prompt
+            addMessage({
+              type: 'assistant',
+              content: "Ready to execute? I'll handle everything for you with one click! 🚀",
+            });
+          }
+        } else {
+          // AI couldn't parse intent
+          updateMessage(processingId, {
+            content: aiResponse.explanation,
+          });
+          
+          if (aiResponse.suggestions.length > 0) {
+            addMessage({
+              type: 'assistant',
+              content: `💡 Try these formats:\n${aiResponse.suggestions.map(s => `• ${s}`).join('\n')}`,
+            });
+          }
+        }
+      } else {
+        // Fallback to original logic if AI not available
+        await solveIntent(intentText);
         
-        // Add route details
-        addMessage({
-          type: 'system',
-          content: 'route-details',
-          data: {
-            intent: parsedIntent,
-            route: optimalRoute,
-          },
-        });
+        if (solverState.error) {
+          updateMessage(processingId, {
+            content: `❌ ${solverState.error}`,
+          });
+          return;
+        }
         
-        // Add execution prompt
-        addMessage({
-          type: 'assistant',
-          content: "Ready to execute? I'll handle everything for you with one click! 🚀",
-        });
-        
+        if (solverState.parsedIntent && solverState.optimalRoute) {
+          const { parsedIntent, optimalRoute } = solverState;
+          
+          updateMessage(processingId, {
+            content: `✅ Perfect! I found the optimal route for your swap.`,
+          });
+          
+          addMessage({
+            type: 'system',
+            content: 'route-details',
+            data: {
+              intent: parsedIntent,
+              route: optimalRoute,
+            },
+          });
+          
+          addMessage({
+            type: 'assistant',
+            content: "Ready to execute? I'll handle everything for you with one click! 🚀",
+          });
+        }
       }
     } catch (error) {
       addMessage({
         type: 'assistant',
-        content: `❌ Sorry, I couldn't process that. ${error}`,
+        content: `❌ Sorry, I encountered an error: ${error}`,
       });
     } finally {
       setIsTyping(false);

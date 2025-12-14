@@ -1,8 +1,8 @@
 // Real AquaFlow Deployment Script - Deploy to Arbitrum Sepolia
 // This makes the smart contracts actually work on blockchain
 
-const { ethers } = require('hardhat');
-const fs = require('fs');
+import { ethers } from 'hardhat';
+import fs from 'fs';
 
 async function deployReal() {
   console.log('🚀 DEPLOYING REAL AQUAFLOW TO ARBITRUM SEPOLIA...');
@@ -94,16 +94,15 @@ async function deployStylelusRouter() {
   console.log('This will deploy the Rust contract to Arbitrum Sepolia');
 }
 
-if (require.main === module) {
-  deployReal()
-    .then(() => {
-      deployStylelusRouter();
-      process.exit(0);
-    })
-    .catch((error) => {
-      console.error('❌ Deployment failed:', error);
-      process.exit(1);
-    });
-}
+// Auto-run deployment
+deployReal()
+  .then(() => {
+    deployStylelusRouter();
+    process.exit(0);
+  })
+  .catch((error) => {
+    console.error('❌ Deployment failed:', error);
+    process.exit(1);
+  });
 
-module.exports = { deployReal };
+export { deployReal };
