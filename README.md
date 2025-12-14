@@ -33,16 +33,8 @@ AquaFlow is the **first intent-based liquidity router** that makes DeFi feel lik
 - **Educational Insights** - AI explains complex DeFi concepts in simple terms
 
 ```mermaid
-graph TB
-    A["👤 User Intent: Swap 100 USDC to USDT"] --> B["🧠 AI Parser: 95% Confidence"]
-    B --> C["🔍 Route Discovery: 47 Pools Scanned"]
-    C --> D["🦀 Stylus Router: 76% Gas Savings"]
-    D --> E["⚡ Execution: 15 Seconds"]
-    E --> F["✅ Settlement: Cross-Chain Magic"]
-    
-    style A fill:#e1f5fe
-    style D fill:#f3e5f5
-    style F fill:#e8f5e8
+<img width="256" height="584" alt="image" src="https://github.com/user-attachments/assets/27ecc98b-0cad-4b79-a410-5c67c0a338d6" />
+
 ```
 
 ### **🎪 The Magic**
