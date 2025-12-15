@@ -503,7 +503,7 @@ function SystemMessage({
               <Button
                 onClick={onExecute}
                 disabled={isExecuting}
-                loading={isExecuting}
+                isLoading={isExecuting}
                 className="w-full mt-4"
                 size="lg"
               >

@@ -2,12 +2,25 @@
 
 import { motion } from 'framer-motion';
 import { useAccount } from 'wagmi';
-import { TrendingUp, Wallet, Activity, DollarSign, Zap } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { TrendingUp, Wallet, Activity, DollarSign, Zap, ArrowRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import Image from 'next/image';
 
 export default function DashboardPage() {
   const { isConnected, address } = useAccount();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center p-4">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-400"></div>
+      </div>
+    );
+  }
 
   if (!isConnected) {
     return (
@@ -110,13 +123,15 @@ export default function DashboardPage() {
             <CardContent className="p-6">
               <div className="space-y-4">
                 {[
-                  { symbol: 'ETH', name: 'Ethereum', balance: '2.5', value: '$6,250.00', icon: '/assets/tokens/eth.png' },
-                  { symbol: 'USDC', name: 'USD Coin', balance: '1,250.00', value: '$1,250.00', icon: '/assets/tokens/usdc.png' },
-                  { symbol: 'ARB', name: 'Arbitrum', balance: '5,000', value: '$4,950.32', icon: '/assets/tokens/Arb1.png' },
+                  { symbol: 'ETH', name: 'Ethereum', balance: '2.5', value: '$6,250.00' },
+                  { symbol: 'USDC', name: 'USD Coin', balance: '1,250.00', value: '$1,250.00' },
+                  { symbol: 'ARB', name: 'Arbitrum', balance: '5,000', value: '$4,950.32' },
                 ].map((token, index) => (
                   <div key={token.symbol} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
                     <div className="flex items-center gap-3">
-                      <Image src={token.icon} alt={token.symbol} width={32} height={32} />
+                      <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                        <span className="text-white text-sm font-bold">{token.symbol.charAt(0)}</span>
+                      </div>
                       <div>
                         <div className="font-medium text-white">{token.symbol}</div>
                         <div className="text-sm text-blue-200/70">{token.name}</div>

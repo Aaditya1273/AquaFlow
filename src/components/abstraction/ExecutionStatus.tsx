@@ -30,13 +30,15 @@ interface ExecutionStatusProps {
   txHash?: string;
   error?: string;
   onComplete?: () => void;
+  txType?: 'swap' | 'approval' | 'faucet' | null;
 }
 
 export function ExecutionStatus({ 
   isExecuting, 
   txHash, 
   error, 
-  onComplete 
+  onComplete,
+  txType = 'swap'
 }: ExecutionStatusProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [startTime, setStartTime] = useState<number | null>(null);
@@ -138,13 +140,26 @@ export function ExecutionStatus({
         <CardContent className="p-6">
           <div className="text-center mb-6">
             <h3 className="text-lg font-semibold text-white mb-2">
-              {txHash ? 'Swap Complete!' : 'Processing Your Swap'}
+              {txHash ? (
+                txType === 'faucet' ? 'Tokens Received!' :
+                txType === 'approval' ? 'Approval Complete!' :
+                'Swap Complete!'
+              ) : (
+                txType === 'faucet' ? 'Getting Your Tokens' :
+                txType === 'approval' ? 'Approving Token' :
+                'Processing Your Swap'
+              )}
             </h3>
             <p className="text-sm text-gray-400">
-              {txHash 
-                ? 'Your tokens have been swapped successfully'
-                : 'Sit back and relax - we\'re handling everything'
-              }
+              {txHash ? (
+                txType === 'faucet' ? 'Free testnet tokens have been sent to your wallet' :
+                txType === 'approval' ? 'Token approval was successful' :
+                'Your tokens have been swapped successfully'
+              ) : (
+                txType === 'faucet' ? 'Getting free testnet tokens for you to try AquaFlow' :
+                txType === 'approval' ? 'Approving token spending permission' :
+                'Sit back and relax - we\'re handling everything'
+              )}
             </p>
           </div>
           

@@ -159,7 +159,7 @@ export function SwapPreview({
             <Button
               onClick={onExecute}
               className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-              loading={isExecuting}
+              isLoading={isExecuting}
               disabled={isExecuting}
             >
               {isExecuting ? 'Executing...' : 'Execute Swap'}

@@ -21,19 +21,35 @@ const queryClient = new QueryClient({
 });
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  // Suppress WalletConnect configuration warnings in development
+  // Suppress development warnings and errors
   useEffect(() => {
     if (process.env.NODE_ENV === 'development') {
       const originalError = console.error;
+      const originalWarn = console.warn;
+      
       console.error = (...args) => {
         if (
           typeof args[0] === 'string' && 
           (args[0].includes('Failed to fetch remote project configuration') ||
-           args[0].includes('Reown Config'))
+           args[0].includes('Reown Config') ||
+           args[0].includes('[PHANTOM]') ||
+           args[0].includes('Could not establish connection') ||
+           args[0].includes('Receiving end does not exist'))
         ) {
-          return; // Suppress WalletConnect config warnings
+          return; // Suppress wallet extension noise
         }
         originalError.apply(console, args);
+      };
+
+      console.warn = (...args) => {
+        if (
+          typeof args[0] === 'string' && 
+          (args[0].includes('Lit is in dev mode') ||
+           args[0].includes('Multiple versions of Lit loaded'))
+        ) {
+          return; // Suppress Lit dev warnings
+        }
+        originalWarn.apply(console, args);
       };
     }
   }, []);
@@ -51,7 +67,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
           })}
           showRecentTransactions={true}
           modalSize="compact"
-          initialChain={42161} // Default to Arbitrum One
+          initialChain={421614} // Default to Arbitrum Sepolia for testing
         >
           {children}
           <Toaster

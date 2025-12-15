@@ -1,12 +1,13 @@
 // Elite Chain Abstraction UX - Users never see chains, only benefits
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Zap, Clock, Shield, DollarSign, CheckCircle, Sparkles } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { formatNumber, formatTime } from '@/lib/utils';
+import { generateRouteOptions, GAS_ESTIMATES, calculateGasSavings } from '@/lib/contracts';
 
 interface RouteOption {
   id: string;
@@ -45,69 +46,17 @@ export function RouteSelector({
 }: RouteSelectorProps) {
   const [showDetails, setShowDetails] = useState(false);
   
-  // AI-curated route options (technical complexity hidden)
-  const routes: RouteOption[] = [
-    {
-      id: 'optimal',
-      name: 'Optimal',
-      description: 'Best overall value - recommended by AI',
-      icon: <Sparkles className="h-5 w-5" />,
-      color: 'text-purple-400',
-      gradient: 'from-purple-500 to-blue-500',
-      fee: 0.12,
-      speed: 15,
-      finality: 'Instant',
-      confidence: 0.95,
-      chainId: 42161,
-      gasEstimate: 45000n,
+  // Generate real route options using contract utilities
+  const routes: RouteOption[] = useMemo(() => {
+    return generateRouteOptions(tokenIn, tokenOut, amount).map(route => ({
+      ...route,
+      icon: route.id === 'stylus-optimal' ? <Sparkles className="h-5 w-5" /> :
+            route.id === 'stylus-cheapest' ? <DollarSign className="h-5 w-5" /> :
+            <Zap className="h-5 w-5" />,
+      chainId: 421614, // Arbitrum Sepolia
       bridgeRequired: false,
-    },
-    {
-      id: 'cheapest',
-      name: 'Cheapest',
-      description: 'Lowest fees for your swap',
-      icon: <DollarSign className="h-5 w-5" />,
-      color: 'text-green-400',
-      gradient: 'from-green-500 to-emerald-500',
-      fee: 0.08,
-      speed: 25,
-      finality: 'Very Fast',
-      confidence: 0.88,
-      chainId: 42170,
-      gasEstimate: 32000n,
-      bridgeRequired: false,
-    },
-    {
-      id: 'fastest',
-      name: 'Fastest',
-      description: 'Lightning-fast execution',
-      icon: <Zap className="h-5 w-5" />,
-      color: 'text-yellow-400',
-      gradient: 'from-yellow-500 to-orange-500',
-      fee: 0.18,
-      speed: 8,
-      finality: 'Instant',
-      confidence: 0.92,
-      chainId: 421337,
-      gasEstimate: 28000n,
-      bridgeRequired: false,
-    },
-    {
-      id: 'secure',
-      name: 'Most Secure',
-      description: 'Maximum security and finality',
-      icon: <Shield className="h-5 w-5" />,
-      color: 'text-blue-400',
-      gradient: 'from-blue-500 to-indigo-500',
-      fee: 0.15,
-      speed: 45,
-      finality: 'Guaranteed',
-      confidence: 0.98,
-      chainId: 42161,
-      gasEstimate: 52000n,
-      bridgeRequired: false,
-    },
-  ];
+    }));
+  }, [tokenIn, tokenOut, amount]);
   
   const handleSelect = (route: RouteOption) => {
     onSelect(route);

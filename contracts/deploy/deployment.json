@@ -6,10 +6,13 @@
   "contracts": {
     "AquaFlowWrapper": "0xA0b86a33E6411a3b0b6F3E6C5B8B8B8B8B8B8B8B",
     "StylelusRouter": "0x7cd6674681f4b83e971feb058323b8088f48aa77",
-    "MockUSDC": "0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d",
-    "MockUSDT": "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
+    "AquaFlowFaucet": "0x7481F31f5AeC845EB86EFC59e511D7226178d9a7",
+    "MockUSDC": "0x5F316A4944EA66Ab5fad15c266197CB7Af2BB42e",
+    "MockUSDT": "0xa31749b81470eD13C5efeAa290Cf1caB67Aeb425",
     "RealUSDC": "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
-    "RealUSDT": "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9"
+    "RealUSDT": "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",
+    "MockARB": "0xEa53E2fF08CD18fD31B188a72079aE9Ca34856e4",
+    "MockUNI": "0x464D37393C8D3991b493DBb57F5f3b8c31c7Fa60"
   },
   "deployer": "0x8bB9b052ad7ec275b46bfcDe425309557EFFAb07",
   "deployedAt": "2025-12-13T17:12:14.127Z",
@@ -34,5 +37,50 @@
       "EVM compatibility"
     ],
     "deployedAt": "2025-12-14T04:26:32.107Z"
+  },
+  "mockTokens": {
+    "deployer": "0x8bB9b052ad7ec275b46bfcDe425309557EFFAb07",
+    "deployedAt": "2025-12-15T05:37:18.996Z",
+    "network": "arbitrum-sepolia",
+    "chainId": 421614,
+    "tokens": {
+      "USDC": {
+        "address": "0x5F316A4944EA66Ab5fad15c266197CB7Af2BB42e",
+        "name": "AquaFlow Test USDC",
+        "symbol": "USDC",
+        "decimals": 6,
+        "hasFaucet": true,
+        "faucetAmount": "1000"
+      },
+      "USDT": {
+        "address": "0xa31749b81470eD13C5efeAa290Cf1caB67Aeb425",
+        "name": "AquaFlow Test USDT",
+        "symbol": "USDT",
+        "decimals": 6,
+        "hasFaucet": true,
+        "faucetAmount": "1000"
+      },
+      "ARB": {
+        "address": "0xEa53E2fF08CD18fD31B188a72079aE9Ca34856e4",
+        "name": "AquaFlow Test ARB",
+        "symbol": "ARB",
+        "decimals": 18,
+        "hasFaucet": true,
+        "faucetAmount": "100"
+      },
+      "UNI": {
+        "address": "0x464D37393C8D3991b493DBb57F5f3b8c31c7Fa60",
+        "name": "AquaFlow Test UNI",
+        "symbol": "UNI",
+        "decimals": 18,
+        "hasFaucet": true,
+        "faucetAmount": "100"
+      }
+    },
+    "faucetInfo": {
+      "cooldown": "1 hour",
+      "amountPerClaim": "Varies by token",
+      "method": "Call faucet() function"
+    }
   }
 }
