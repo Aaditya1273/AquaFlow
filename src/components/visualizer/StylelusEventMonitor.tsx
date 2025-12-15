@@ -128,7 +128,7 @@ export function StylelusEventMonitor({ isActive, onEvent }: EventMonitorProps) {
             <MetricCard
               icon={<Zap className="h-4 w-4" />}
               label="Avg Gas"
-              value={formatNumber.gas(stats.avgGasUsed)}
+              value={formatNumber.gas(BigInt(stats.avgGasUsed))}
               color="text-green-400"
               trend="down"
             />
@@ -297,7 +297,7 @@ function EventCard({
             {formatTime.relative(event.timestamp)}
           </div>
           <div className="text-xs text-green-400">
-            {formatNumber.gas(event.gasUsed)} gas
+            {formatNumber.gas(BigInt(event.gasUsed))} gas
           </div>
         </div>
       </div>
