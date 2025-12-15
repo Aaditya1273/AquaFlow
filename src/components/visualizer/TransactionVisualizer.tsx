@@ -505,7 +505,7 @@ function MetricsPanel({
                         {key.replace(/([A-Z])/g, ' $1').trim()}:
                       </span>
                       <span className="text-gray-300">
-                        {typeof value === 'number' ? formatNumber.gas(value) : String(value)}
+                        {typeof value === 'number' ? formatNumber.gas(BigInt(value)) : String(value)}
                       </span>
                     </div>
                   ))}
