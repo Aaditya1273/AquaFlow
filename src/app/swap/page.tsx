@@ -323,12 +323,7 @@ export default function SwapPage() {
       }
       
       // Force balance refresh after successful transaction
-      if (txType === 'faucet') {
-        // For faucet transactions, refresh balances immediately
-        setTimeout(() => {
-          window.location.reload();
-        }, 3000);
-      }
+      // Note: Removed faucet logic as it's not part of swap functionality
     }
   }, [isTxSuccess, writeData, txType]);
 
