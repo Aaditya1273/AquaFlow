@@ -31,6 +31,9 @@ export default function LiquidCanvas() {
       color: string;
 
       constructor() {
+        // Ensure canvas is available
+        if (!canvas) return;
+        
         this.x = Math.random() * canvas.width;
         this.y = Math.random() * canvas.height;
         this.vx = (Math.random() - 0.5) * 0.5;
@@ -41,6 +44,9 @@ export default function LiquidCanvas() {
       }
 
       update() {
+        // Ensure canvas is available
+        if (!canvas) return;
+        
         this.x += this.vx;
         this.y += this.vy;
 
@@ -67,6 +73,9 @@ export default function LiquidCanvas() {
     // Animation loop
     let animationId: number;
     const animate = () => {
+      // Ensure canvas and ctx are available
+      if (!canvas || !ctx) return;
+      
       ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
