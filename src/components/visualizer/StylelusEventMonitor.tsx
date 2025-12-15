@@ -310,7 +310,7 @@ function EventCard({
               {key.replace(/([A-Z])/g, ' $1').trim()}:
             </span>
             <span className="text-gray-300 font-mono">
-              {typeof value === 'number' ? formatNumber.token(BigInt(value)) : String(value).slice(0, 10)}
+              {typeof value === 'number' ? formatNumber.token(value) : String(value).slice(0, 10)}
             </span>
           </div>
         ))}
