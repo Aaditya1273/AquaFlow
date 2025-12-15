@@ -22,13 +22,13 @@ export default function LiquidCanvas() {
 
     // Particle system
     class Particle {
-      x: number;
-      y: number;
-      vx: number;
-      vy: number;
-      radius: number;
-      alpha: number;
-      color: string;
+      x: number = 0;
+      y: number = 0;
+      vx: number = 0;
+      vy: number = 0;
+      radius: number = 1;
+      alpha: number = 0.5;
+      color: string = '#00f5ff';
 
       constructor() {
         // Ensure canvas is available
