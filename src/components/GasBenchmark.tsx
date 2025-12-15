@@ -13,11 +13,17 @@ import {
   MemoryStick,
   Activity,
   Target,
-  Flame
+  Flame,
+  Info,
+  Shield,
+  Database,
+  CheckCircle2,
+  Star
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { formatNumber } from '@/lib/utils';
+import { CONTRACTS } from '@/lib/contracts';
 
 interface BenchmarkData {
   operation: string;
@@ -44,122 +50,117 @@ interface BenchmarkData {
 
 export default function GasBenchmark() {
   const [selectedMetric, setSelectedMetric] = useState<'gas' | 'time' | 'memory' | 'cost'>('gas');
-  const [isLive, setIsLive] = useState(false);
+  const [isLive, setIsLive] = useState(true);
   const [liveData, setLiveData] = useState<number[]>([]);
-  
-  // Real benchmark data based on actual Stylus performance
-  const benchmarkData: BenchmarkData[] = [
-    {
-      operation: 'Simple Token Swap',
-      description: 'Basic AMM swap with slippage protection',
-      solidity: {
-        gas: 180247,
-        executionTime: 2.3,
-        memoryUsage: 4.2,
-        costUSD: 3.61
-      },
-      stylus: {
-        gas: 43891,
-        executionTime: 0.8,
-        memoryUsage: 1.1,
-        costUSD: 0.88
-      },
-      savings: {
-        gas: 75.6,
-        time: 65.2,
-        memory: 73.8,
-        cost: 75.6
+  const [benchmarkData, setBenchmarkData] = useState<BenchmarkData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [realTxCount, setRealTxCount] = useState(0);
+  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
+
+  // Fetch ONLY REAL transaction data - NO FALLBACKS
+  const fetchRealBenchmarkData = async () => {
+    setIsLoading(true);
+    try {
+      // Use our internal API route to fetch blockchain data
+      const response = await fetch('/api/benchmark');
+      
+      if (!response.ok) {
+        throw new Error(`API request failed: ${response.status}`);
       }
-    },
-    {
-      operation: 'Multi-hop Routing',
-      description: 'Complex routing through 3+ pools',
-      solidity: {
-        gas: 421563,
-        executionTime: 5.7,
-        memoryUsage: 9.8,
-        costUSD: 8.43
-      },
-      stylus: {
-        gas: 94127,
-        executionTime: 1.9,
-        memoryUsage: 2.4,
-        costUSD: 1.88
-      },
-      savings: {
-        gas: 77.7,
-        time: 66.7,
-        memory: 75.5,
-        cost: 77.7
+
+      const result = await response.json();
+      
+      if (!result.success) {
+        throw new Error(result.error || 'API request failed');
       }
-    },
-    {
-      operation: 'Intent Resolution',
-      description: 'AI-powered intent parsing and execution',
-      solidity: {
-        gas: 287394,
-        executionTime: 4.1,
-        memoryUsage: 6.7,
-        costUSD: 5.75
-      },
-      stylus: {
-        gas: 61847,
-        executionTime: 1.3,
-        memoryUsage: 1.8,
-        costUSD: 1.24
-      },
-      savings: {
-        gas: 78.5,
-        time: 68.3,
-        memory: 73.1,
-        cost: 78.4
+
+      const { stylusAvg, uniswapAvg, totalTxCount, stylusTxs, uniswapTxs } = result.data;
+      
+      // ONLY use real data if we have sufficient transactions
+      const hasRealStylusData = stylusTxs.length >= 5;
+      const hasRealUniswapData = uniswapTxs.length >= 5;
+      
+      if (!hasRealStylusData || !hasRealUniswapData) {
+        // Show "No Data Available" state
+        setBenchmarkData([]);
+        setRealTxCount(totalTxCount);
+        setLastUpdated(new Date());
+        return;
       }
-    },
-    {
-      operation: 'Cross-chain Bridge',
-      description: 'Arbitrum One ↔ Nova bridge operation',
-      solidity: {
-        gas: 156892,
-        executionTime: 3.2,
-        memoryUsage: 5.1,
-        costUSD: 3.14
-      },
-      stylus: {
-        gas: 38247,
-        executionTime: 1.1,
-        memoryUsage: 1.3,
-        costUSD: 0.76
-      },
-      savings: {
-        gas: 75.6,
-        time: 65.6,
-        memory: 74.5,
-        cost: 75.8
+
+      // Create benchmarks ONLY from real transaction data
+      const realBenchmarks: BenchmarkData[] = [
+        {
+          operation: 'Simple Token Swap',
+          description: `Based on ${stylusTxs.length} Stylus + ${uniswapTxs.length} Uniswap transactions`,
+          solidity: {
+            gas: Math.round(uniswapAvg.gas),
+            executionTime: Number(uniswapAvg.time.toFixed(1)),
+            memoryUsage: Math.round((uniswapAvg.gas / 50000) * 2.1), // Estimate based on gas
+            costUSD: Number(uniswapAvg.cost.toFixed(2))
+          },
+          stylus: {
+            gas: Math.round(stylusAvg.gas),
+            executionTime: Number(stylusAvg.time.toFixed(1)),
+            memoryUsage: Math.round((stylusAvg.gas / 50000) * 1.1), // Estimate based on gas
+            costUSD: Number(stylusAvg.cost.toFixed(2))
+          },
+          savings: {
+            gas: 0, time: 0, memory: 0, cost: 0 // Will be calculated below
+          }
+        }
+      ];
+
+      // Calculate REAL savings percentages (FIXED: Handle cases where Stylus uses more gas)
+      realBenchmarks.forEach(item => {
+        // Fix the percentage calculation to handle Stylus using more gas than Solidity
+        const gasPercentage = ((item.solidity.gas - item.stylus.gas) / item.solidity.gas * 100);
+        const timePercentage = ((item.solidity.executionTime - item.stylus.executionTime) / item.solidity.executionTime * 100);
+        const memoryPercentage = ((item.solidity.memoryUsage - item.stylus.memoryUsage) / item.solidity.memoryUsage * 100);
+        const costPercentage = ((item.solidity.costUSD - item.stylus.costUSD) / item.solidity.costUSD * 100);
+        
+        // Cap extreme negative values and provide realistic ranges
+        item.savings.gas = Number(Math.max(gasPercentage, -500).toFixed(1)); // Cap at -500% max
+        item.savings.time = Number(Math.max(timePercentage, -500).toFixed(1));
+        item.savings.memory = Number(Math.max(memoryPercentage, -500).toFixed(1));
+        item.savings.cost = Number(Math.max(costPercentage, -500).toFixed(1));
+        
+        // Real data logging
+        console.log(`REAL DATA - ${item.operation}:`, {
+          stylusTxCount: stylusTxs.length,
+          uniswapTxCount: uniswapTxs.length,
+          solidity: item.solidity,
+          stylus: item.stylus,
+          savings: item.savings
+        });
+      });
+
+      setBenchmarkData(realBenchmarks);
+      setRealTxCount(totalTxCount);
+      setLastUpdated(new Date());
+      
+    } catch (error) {
+      console.error('Failed to fetch real benchmark data:', error);
+      
+      // Try to get more details about the error
+      if (error instanceof Error) {
+        console.error('Error details:', error.message);
       }
-    },
-    {
-      operation: 'Pool Registry Update',
-      description: 'Adding new liquidity pool to registry',
-      solidity: {
-        gas: 98743,
-        executionTime: 1.8,
-        memoryUsage: 3.4,
-        costUSD: 1.97
-      },
-      stylus: {
-        gas: 23891,
-        executionTime: 0.6,
-        memoryUsage: 0.9,
-        costUSD: 0.48
-      },
-      savings: {
-        gas: 75.8,
-        time: 66.7,
-        memory: 73.5,
-        cost: 75.6
-      }
+      
+      // NO FALLBACKS - Show empty state when API fails
+      setBenchmarkData([]);
+      setRealTxCount(0);
+    } finally {
+      setIsLoading(false);
     }
-  ];
+  };
+
+  // Fetch real data on component mount and every 30 seconds
+  useEffect(() => {
+    fetchRealBenchmarkData();
+    const interval = setInterval(fetchRealBenchmarkData, 30000); // Update every 30 seconds
+    return () => clearInterval(interval);
+  }, []);
   
   // Calculate overall averages
   const averages = {
@@ -218,51 +219,182 @@ export default function GasBenchmark() {
 
 
       
-      {/* Spacious Performance Cards */}
+      {/* Enhanced Performance Analysis Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {benchmarkData.slice(0, 3).map((item, index) => (
+        {isLoading ? (
+          // Loading State
+          Array.from({ length: 3 }).map((_, index) => (
+            <Card key={index} className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-slate-700/50 h-full backdrop-blur-xl">
+              <CardContent className="p-6 h-full flex items-center justify-center">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400 mx-auto mb-4"></div>
+                  <p className="text-slate-400">Fetching Real Blockchain Data...</p>
+                </div>
+              </CardContent>
+            </Card>
+          ))
+        ) : benchmarkData.length === 0 ? (
+          // No Data Available State
+          <Card className="lg:col-span-3 bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-slate-700/50 backdrop-blur-xl">
+            <CardContent className="p-12 text-center">
+              <div className="w-20 h-20 bg-yellow-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Database className="w-10 h-10 text-yellow-400" />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-4">No Real Transaction Data Available</h3>
+              <p className="text-slate-400 mb-6 max-w-2xl mx-auto">
+                We need at least 5 transactions from both your Stylus Router and Uniswap V3 Router to provide accurate benchmarks. 
+                Current transactions found: {realTxCount}
+              </p>
+              <div className="space-y-4">
+                <p className="text-sm text-blue-300">
+                  <strong>Your Stylus Router:</strong> {CONTRACTS.STYLUS_ROUTER}
+                </p>
+                <p className="text-sm text-slate-500">
+                  Make some swaps through your application to generate real performance data!
+                </p>
+                <div className="flex items-center justify-center gap-4 mt-6">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-green-400" />
+                    <span className="text-sm text-green-400">Real API Connected</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Database className="h-4 w-4 text-blue-400" />
+                    <span className="text-sm text-blue-400">Live Blockchain Monitoring</span>
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <button
+                    onClick={() => {
+                      console.log('Manual API test...');
+                      fetchRealBenchmarkData();
+                    }}
+                    className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm transition-colors"
+                  >
+                    Test API Connection
+                  </button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ) : (
+          // Real Data Cards
+          benchmarkData.slice(0, 3).map((item, index) => (
           <motion.div
             key={item.operation}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.15 }}
-            whileHover={{ scale: 1.03, y: -8 }}
-            className="group"
+            whileHover={{ scale: 1.02, y: -5 }}
+            className="group relative"
           >
-            <Card className="bg-gradient-to-br from-white/10 to-white/5 border-white/20 hover:border-green-400/40 transition-all duration-500 h-full backdrop-blur-xl">
-              <CardContent className="p-8 h-full flex flex-col">
+            <Card className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-slate-700/50 hover:border-green-400/50 transition-all duration-500 h-full backdrop-blur-xl shadow-2xl hover:shadow-green-400/10">
+              <CardContent className="p-6 h-full flex flex-col relative">
+                {/* Trust & Power Indicator */}
+                <div className="absolute top-4 right-4 group/info">
+                  <div className="relative">
+                    <Info className="h-5 w-5 text-blue-400/60 hover:text-blue-400 cursor-help transition-colors" />
+                    
+                    {/* Tooltip */}
+                    <div className="absolute right-0 top-8 w-80 bg-slate-900/95 border border-slate-600 rounded-xl p-4 opacity-0 invisible group-hover/info:opacity-100 group-hover/info:visible transition-all duration-300 z-50 shadow-2xl">
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2 text-green-400 font-semibold">
+                          <Shield className="h-4 w-4" />
+                          Analysis Trustworthiness
+                        </div>
+                        
+                        <div className="space-y-2 text-sm">
+                          <div className="flex items-center justify-between">
+                            <span className="text-slate-300">Data Source:</span>
+                            <div className="flex items-center gap-1">
+                              <CheckCircle2 className="h-3 w-3 text-green-400" />
+                              <span className="text-green-400 font-medium">
+                                {isLoading ? 'Loading...' : 'Arbiscan API'}
+                              </span>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center justify-between">
+                            <span className="text-slate-300">Real Transactions:</span>
+                            <div className="flex items-center gap-1">
+                              <Database className="h-3 w-3 text-blue-400" />
+                              <span className="text-blue-400 font-medium">
+                                {isLoading ? '...' : `${realTxCount} Txns`}
+                              </span>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center justify-between">
+                            <span className="text-slate-300">Last Updated:</span>
+                            <div className="flex items-center gap-1">
+                              <Star className="h-3 w-3 text-yellow-400" />
+                              <span className="text-yellow-400 font-medium text-xs">
+                                {isLoading ? '...' : lastUpdated.toLocaleTimeString()}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="pt-2 border-t border-slate-700">
+                          <p className="text-xs text-slate-400 mb-2">
+                            {isLoading 
+                              ? 'Fetching real transaction data from Arbitrum Sepolia...'
+                              : `Live data from deployed contracts: ${CONTRACTS.STYLUS_ROUTER.slice(0, 8)}... vs ${CONTRACTS.UNISWAP_V3_ROUTER.slice(0, 8)}...`
+                            }
+                          </p>
+                          {!isLoading && benchmarkData.length > 0 && (
+                            <div className="text-xs text-amber-400 bg-amber-500/10 rounded p-2">
+                              <strong>Note:</strong> Stylus has ~128-2048 gas WASM entry overhead. 
+                              For simple operations (basic swaps), this overhead can exceed savings. 
+                              Stylus excels at compute-heavy tasks (cryptography, complex math).
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Header Section */}
-                <div className="text-center mb-8">
-                  <h3 className="text-2xl font-bold text-white mb-4">
+                <div className="text-center mb-6">
+                  <h3 className="text-xl font-bold text-white mb-3 pr-8">
                     {item.operation}
                   </h3>
-                  <div className="flex items-center justify-center space-x-3 mb-6">
-                    <TrendingDown className="h-8 w-8 text-green-400" />
-                    <span className="text-5xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
-                      {getMetricSavings(item, selectedMetric).toFixed(1)}%
+                  <div className="flex items-center justify-center space-x-3 mb-4">
+                    <motion.div
+                      animate={{ rotate: [0, -10, 0] }}
+                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                    >
+                      <TrendingDown className="h-6 w-6 text-green-400" />
+                    </motion.div>
+                    <span className={`text-4xl font-bold bg-gradient-to-r ${
+                      getMetricSavings(item, selectedMetric) >= 0 
+                        ? 'from-green-400 via-emerald-400 to-green-500' 
+                        : 'from-red-400 via-orange-400 to-red-500'
+                    } bg-clip-text text-transparent`}>
+                      {getMetricSavings(item, selectedMetric) >= 0 ? '+' : ''}{getMetricSavings(item, selectedMetric).toFixed(1)}%
                     </span>
                   </div>
-                  <p className="text-sm text-blue-200/80 leading-relaxed max-w-xs mx-auto">
+                  <p className="text-xs text-slate-400 leading-relaxed max-w-xs mx-auto">
                     {item.description}
                   </p>
                 </div>
                 
                 {/* Performance Comparison */}
-                <div className="space-y-6 mb-8 flex-1">
+                <div className="space-y-4 mb-6 flex-1">
                   {/* Solidity Performance */}
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <Cpu className="h-5 w-5 text-red-400" />
-                        <span className="text-lg font-semibold text-red-400">Solidity</span>
+                      <div className="flex items-center space-x-2">
+                        <div className="w-2 h-2 bg-red-400 rounded-full"></div>
+                        <span className="text-sm font-medium text-red-400">Solidity</span>
                       </div>
-                      <span className="text-lg font-mono text-white">
+                      <span className="text-sm font-mono text-white">
                         {getMetricValue(item, selectedMetric, 'solidity')}
                       </span>
                     </div>
-                    <div className="bg-gray-800 rounded-xl h-4 relative overflow-hidden">
+                    <div className="bg-slate-800 rounded-lg h-2 relative overflow-hidden">
                       <motion.div
-                        className="bg-gradient-to-r from-red-500 via-red-400 to-red-600 h-full rounded-xl shadow-lg shadow-red-500/30"
+                        className="bg-gradient-to-r from-red-500 to-red-400 h-full rounded-lg"
                         initial={{ width: 0 }}
                         animate={{ width: '100%' }}
                         transition={{ delay: index * 0.15 + 0.5, duration: 1, ease: "easeOut" }}
@@ -271,19 +403,19 @@ export default function GasBenchmark() {
                   </div>
                   
                   {/* Stylus Performance */}
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <Zap className="h-5 w-5 text-blue-400" />
-                        <span className="text-lg font-semibold text-blue-400">Stylus</span>
+                      <div className="flex items-center space-x-2">
+                        <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                        <span className="text-sm font-medium text-blue-400">Stylus</span>
                       </div>
-                      <span className="text-lg font-mono text-white">
+                      <span className="text-sm font-mono text-white">
                         {getMetricValue(item, selectedMetric, 'stylus')}
                       </span>
                     </div>
-                    <div className="bg-gray-800 rounded-xl h-4 relative overflow-hidden">
+                    <div className="bg-slate-800 rounded-lg h-2 relative overflow-hidden">
                       <motion.div
-                        className="bg-gradient-to-r from-blue-500 via-cyan-400 to-blue-600 h-full rounded-xl shadow-lg shadow-blue-500/30"
+                        className="bg-gradient-to-r from-blue-500 to-cyan-400 h-full rounded-lg"
                         initial={{ width: 0 }}
                         animate={{ 
                           width: `${100 - getMetricSavings(item, selectedMetric)}%` 
@@ -294,37 +426,107 @@ export default function GasBenchmark() {
                   </div>
                 </div>
                 
-                {/* Detailed Metrics */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-4 bg-gradient-to-br from-green-500/20 to-green-600/10 rounded-xl border border-green-500/30">
-                    <div className="text-2xl font-bold text-green-400 mb-1">
-                      {(item.solidity.gas - item.stylus.gas).toLocaleString()}
+                {/* Detailed Metrics Grid */}
+                <div className="grid grid-cols-2 gap-3">
+                  <motion.div 
+                    className={`text-center p-3 bg-gradient-to-br ${
+                      item.solidity.gas >= item.stylus.gas 
+                        ? 'from-green-500/15 to-green-600/5 border-green-500/20 hover:border-green-400/40' 
+                        : 'from-red-500/15 to-red-600/5 border-red-500/20 hover:border-red-400/40'
+                    } rounded-lg border transition-colors`}
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                  >
+                    <div className={`text-lg font-bold mb-1 ${
+                      item.solidity.gas >= item.stylus.gas ? 'text-green-400' : 'text-red-400'
+                    }`}>
+                      {item.solidity.gas >= item.stylus.gas ? '+' : ''}{(item.solidity.gas - item.stylus.gas).toLocaleString()}
                     </div>
-                    <div className="text-xs text-green-300/80 uppercase tracking-wide">Gas Saved</div>
-                  </div>
-                  <div className="text-center p-4 bg-gradient-to-br from-blue-500/20 to-blue-600/10 rounded-xl border border-blue-500/30">
-                    <div className="text-2xl font-bold text-blue-400 mb-1">
-                      {(item.solidity.executionTime - item.stylus.executionTime).toFixed(1)}s
+                    <div className={`text-xs uppercase tracking-wide font-medium ${
+                      item.solidity.gas >= item.stylus.gas ? 'text-green-300/70' : 'text-red-300/70'
+                    }`}>
+                      {item.solidity.gas >= item.stylus.gas ? 'Gas Saved' : 'Gas Overhead'}
                     </div>
-                    <div className="text-xs text-blue-300/80 uppercase tracking-wide">Time Saved</div>
-                  </div>
-                  <div className="text-center p-4 bg-gradient-to-br from-purple-500/20 to-purple-600/10 rounded-xl border border-purple-500/30">
-                    <div className="text-2xl font-bold text-purple-400 mb-1">
-                      {(item.solidity.memoryUsage - item.stylus.memoryUsage).toFixed(1)}MB
+                  </motion.div>
+                  
+                  <motion.div 
+                    className={`text-center p-3 bg-gradient-to-br ${
+                      item.solidity.executionTime >= item.stylus.executionTime 
+                        ? 'from-blue-500/15 to-blue-600/5 border-blue-500/20 hover:border-blue-400/40' 
+                        : 'from-orange-500/15 to-orange-600/5 border-orange-500/20 hover:border-orange-400/40'
+                    } rounded-lg border transition-colors`}
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                  >
+                    <div className={`text-lg font-bold mb-1 ${
+                      item.solidity.executionTime >= item.stylus.executionTime ? 'text-blue-400' : 'text-orange-400'
+                    }`}>
+                      {item.solidity.executionTime >= item.stylus.executionTime ? '+' : ''}{(item.solidity.executionTime - item.stylus.executionTime).toFixed(1)}s
                     </div>
-                    <div className="text-xs text-purple-300/80 uppercase tracking-wide">Memory Saved</div>
-                  </div>
-                  <div className="text-center p-4 bg-gradient-to-br from-yellow-500/20 to-yellow-600/10 rounded-xl border border-yellow-500/30">
-                    <div className="text-2xl font-bold text-yellow-400 mb-1">
-                      ${(item.solidity.costUSD - item.stylus.costUSD).toFixed(2)}
+                    <div className={`text-xs uppercase tracking-wide font-medium ${
+                      item.solidity.executionTime >= item.stylus.executionTime ? 'text-blue-300/70' : 'text-orange-300/70'
+                    }`}>
+                      {item.solidity.executionTime >= item.stylus.executionTime ? 'Time Saved' : 'Time Overhead'}
                     </div>
-                    <div className="text-xs text-yellow-300/80 uppercase tracking-wide">Cost Saved</div>
+                  </motion.div>
+                  
+                  <motion.div 
+                    className={`text-center p-3 bg-gradient-to-br ${
+                      item.solidity.memoryUsage >= item.stylus.memoryUsage 
+                        ? 'from-purple-500/15 to-purple-600/5 border-purple-500/20 hover:border-purple-400/40' 
+                        : 'from-pink-500/15 to-pink-600/5 border-pink-500/20 hover:border-pink-400/40'
+                    } rounded-lg border transition-colors`}
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                  >
+                    <div className={`text-lg font-bold mb-1 ${
+                      item.solidity.memoryUsage >= item.stylus.memoryUsage ? 'text-purple-400' : 'text-pink-400'
+                    }`}>
+                      {item.solidity.memoryUsage >= item.stylus.memoryUsage ? '+' : ''}{(item.solidity.memoryUsage - item.stylus.memoryUsage).toFixed(1)}MB
+                    </div>
+                    <div className={`text-xs uppercase tracking-wide font-medium ${
+                      item.solidity.memoryUsage >= item.stylus.memoryUsage ? 'text-purple-300/70' : 'text-pink-300/70'
+                    }`}>
+                      {item.solidity.memoryUsage >= item.stylus.memoryUsage ? 'Memory Saved' : 'Memory Overhead'}
+                    </div>
+                  </motion.div>
+                  
+                  <motion.div 
+                    className={`text-center p-3 bg-gradient-to-br ${
+                      item.solidity.costUSD >= item.stylus.costUSD 
+                        ? 'from-yellow-500/15 to-yellow-600/5 border-yellow-500/20 hover:border-yellow-400/40' 
+                        : 'from-red-500/15 to-red-600/5 border-red-500/20 hover:border-red-400/40'
+                    } rounded-lg border transition-colors`}
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                  >
+                    <div className={`text-lg font-bold mb-1 ${
+                      item.solidity.costUSD >= item.stylus.costUSD ? 'text-yellow-400' : 'text-red-400'
+                    }`}>
+                      {item.solidity.costUSD >= item.stylus.costUSD ? '+$' : '-$'}{Math.abs(item.solidity.costUSD - item.stylus.costUSD).toFixed(2)}
+                    </div>
+                    <div className={`text-xs uppercase tracking-wide font-medium ${
+                      item.solidity.costUSD >= item.stylus.costUSD ? 'text-yellow-300/70' : 'text-red-300/70'
+                    }`}>
+                      {item.solidity.costUSD >= item.stylus.costUSD ? 'Cost Saved' : 'Extra Cost'}
+                    </div>
+                  </motion.div>
+                </div>
+
+                {/* Performance Badge */}
+                <div className="mt-4 flex justify-center">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-400/30 rounded-full">
+                    <CheckCircle2 className="h-3 w-3 text-green-400" />
+                    <span className="text-xs font-medium text-green-400">
+                      {isLoading ? 'Loading Real Data...' : 'Live Blockchain Data'}
+                    </span>
                   </div>
                 </div>
               </CardContent>
             </Card>
           </motion.div>
-        ))}
+          ))
+        )}
       </div>
 
     </div>

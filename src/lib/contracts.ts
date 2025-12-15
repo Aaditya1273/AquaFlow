@@ -6,7 +6,7 @@ export const CONTRACTS = {
   // Our deployed AquaFlow contracts
   AQUAFLOW_WRAPPER: getAddress('0xA0b86a33E6411a3b0b6F3E6C5B8B8B8B8B8B8B8B'),
   STYLUS_ROUTER: getAddress('0x7cd6674681f4b83e971feb058323b8088f48aa77'),
-  AQUAFLOW_FAUCET: getAddress('0x7481F31f5AeC845EB86EFC59e511D7226178d9a7'),
+
   
   // Real Uniswap V3 on Arbitrum Sepolia
   UNISWAP_V3_ROUTER: getAddress('0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45'),
@@ -172,50 +172,7 @@ export const STYLUS_ABI = [
   },
 ] as const;
 
-// AquaFlow Faucet ABI - For getting testnet tokens
-export const FAUCET_ABI = [
-  {
-    name: 'claimTokens',
-    type: 'function',
-    stateMutability: 'nonpayable',
-    inputs: [{ name: 'tokenAddress', type: 'address' }],
-    outputs: [],
-  },
-  {
-    name: 'canClaim',
-    type: 'function',
-    stateMutability: 'view',
-    inputs: [
-      { name: 'user', type: 'address' },
-      { name: 'tokenAddress', type: 'address' }
-    ],
-    outputs: [{ name: '', type: 'bool' }],
-  },
-  {
-    name: 'timeUntilNextClaim',
-    type: 'function',
-    stateMutability: 'view',
-    inputs: [
-      { name: 'user', type: 'address' },
-      { name: 'tokenAddress', type: 'address' }
-    ],
-    outputs: [{ name: '', type: 'uint256' }],
-  },
-  {
-    name: 'FAUCET_AMOUNT',
-    type: 'function',
-    stateMutability: 'view',
-    inputs: [],
-    outputs: [{ name: '', type: 'uint256' }],
-  },
-  {
-    name: 'COOLDOWN_TIME',
-    type: 'function',
-    stateMutability: 'view',
-    inputs: [],
-    outputs: [{ name: '', type: 'uint256' }],
-  },
-] as const;
+
 
 // Gas estimation utilities
 export const GAS_ESTIMATES = {

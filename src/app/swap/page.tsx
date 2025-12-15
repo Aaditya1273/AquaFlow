@@ -30,7 +30,7 @@ import {
   TOKENS, 
   ERC20_ABI, 
   UNISWAP_V3_ROUTER_ABI,
-  FAUCET_ABI,
+
   getExchangeRate,
   calculateAmountOut,
   generateRouteOptions,
@@ -303,121 +303,10 @@ export default function SwapPage() {
     }
   };
 
-  // Handle getting test tokens from faucet
-  const handleGetTestTokens = async (tokenSymbol: string) => {
-    if (!address) {
-      setError('Please connect wallet first');
-      return;
-    }
 
-    try {
-      setError('');
-      setTxType('faucet');
-      
-      const tokenConfig = TOKENS[tokenSymbol as keyof typeof TOKENS];
-      
-      console.log('Getting test tokens:', {
-        token: tokenSymbol,
-        address: tokenConfig.address,
-        user: address,
-        faucet: CONTRACTS.AQUAFLOW_FAUCET
-      });
-
-      // Since our deployed faucet contract has invalid bytecode, 
-      // let's use the AquaFlow wrapper's recoverToken function as a faucet
-      // This simulates a working faucet for demo purposes
-      writeContract({
-        address: CONTRACTS.AQUAFLOW_WRAPPER,
-        abi: [
-          {
-            name: 'recoverToken',
-            type: 'function',
-            stateMutability: 'nonpayable',
-            inputs: [
-              { name: 'token', type: 'address' },
-              { name: 'amount', type: 'uint256' }
-            ],
-            outputs: [],
-          },
-        ],
-        functionName: 'recoverToken',
-        args: [
-          tokenConfig.address,
-          parseUnits('100', tokenConfig.decimals) // Give 100 tokens
-        ],
-      });
-
-      console.log(`Faucet request for ${tokenSymbol} submitted - wallet should popup`);
-    } catch (err: any) {
-      console.error('Faucet error:', err);
-      
-      // If the contract call fails, show helpful instructions
-      // Direct users to real testnet faucets for actual tokens
-      const faucetInfo: Record<string, { url: string; description: string }> = {
-        'ETH': {
-          url: 'https://faucet.quicknode.com/arbitrum/sepolia',
-          description: 'Get testnet ETH for gas fees'
-        },
-        'ARB': {
-          url: 'https://faucet.quicknode.com/arbitrum/sepolia',
-          description: 'Get real ARB testnet tokens'
-        },
-        'USDC': {
-          url: 'https://faucet.circle.com/arbitrum-sepolia',
-          description: 'Get real USDC testnet tokens'
-        },
-        'USDT': {
-          url: 'https://faucet.arbitrum.io/',
-          description: 'Get real USDT testnet tokens'
-        },
-        'UNI': {
-          url: 'https://faucet.paradigm.xyz/',
-          description: 'Get real UNI testnet tokens'
-        },
-        'LINK': {
-          url: 'https://faucets.chain.link/arbitrum-sepolia',
-          description: 'Get real LINK testnet tokens'
-        },
-        'WBTC': {
-          url: 'https://faucet.arbitrum.io/',
-          description: 'Get real WBTC testnet tokens'
-        },
-        'DAI': {
-          url: 'https://faucet.arbitrum.io/',
-          description: 'Get real DAI testnet tokens'
-        }
-      };
-
-      const faucet = faucetInfo[tokenSymbol];
-      
-      if (faucet) {
-        const userChoice = confirm(
-          `🚰 Get Real ${tokenSymbol} Testnet Tokens\n\n` +
-          `${faucet.description}\n\n` +
-          `This will open the official faucet: ${faucet.url}\n\n` +
-          `✅ These are REAL testnet tokens (not mock/fake)\n` +
-          `✅ Same contracts as mainnet, but on testnet\n` +
-          `✅ Perfect for testing AquaFlow swaps\n\n` +
-          `After getting tokens, refresh this page to see your balance.\n\n` +
-          `Click OK to open faucet`
-        );
-        
-        if (userChoice) {
-          window.open(faucet.url, '_blank');
-          
-          // Show success message
-          setTimeout(() => {
-            alert(`✅ Faucet opened! After claiming ${tokenSymbol} tokens, refresh this page to see your updated balance.`);
-          }, 1000);
-        }
-      } else {
-        setError(`Faucet not available for ${tokenSymbol}. Try ETH, ARB, USDC, or USDT first.`);
-      }
-    }
-  };
 
   // Track transaction type
-  const [txType, setTxType] = useState<'swap' | 'approval' | 'faucet' | null>(null);
+  const [txType, setTxType] = useState<'swap' | 'approval' | null>(null);
 
   // Handle transaction success
   useEffect(() => {
@@ -758,37 +647,7 @@ export default function SwapPage() {
                 </Button>
               </div>
 
-              {/* Testnet Token Faucet */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="bg-gradient-to-r from-green-500/10 to-blue-500/10 border border-green-400/20 rounded-lg p-4"
-              >
-                <div className="text-center">
-                  <div className="text-sm font-medium text-green-300 mb-2">
-                    🚰 Real Testnet Token Faucets
-                  </div>
-                  <div className="text-xs text-green-200/70 mb-3">
-                    Get REAL testnet tokens • No mock/fake tokens • Official Arbitrum Sepolia faucets
-                  </div>
-                  <div className="flex flex-wrap gap-2 justify-center mb-3">
-                    {Object.entries(TOKENS).filter(([symbol]) => symbol !== 'ETH').slice(0, 4).map(([symbol, token]) => (
-                      <Button
-                        key={symbol}
-                        onClick={() => handleGetTestTokens(symbol)}
-                        size="sm"
-                        disabled={isWritePending}
-                        className="bg-gradient-to-r from-green-500/20 to-blue-500/20 hover:from-green-500/30 hover:to-blue-500/30 text-xs disabled:opacity-50"
-                      >
-                        {isWritePending ? '⏳' : '🪙'} Get {symbol}
-                      </Button>
-                    ))}
-                  </div>
-                  <div className="text-xs text-green-200/50">
-                    ✅ Real Testnet Tokens • ✅ Official Faucets • ✅ No Mock/Fake Assets
-                  </div>
-                </div>
-              </motion.div>
+
 
               {/* Contract Info Display */}
               <motion.div
@@ -808,16 +667,7 @@ export default function SwapPage() {
                       <div className="text-red-400 text-xs mt-2 p-2 bg-red-500/10 rounded">
                         <div className="font-medium">Transaction Error:</div>
                         <div>{writeError.message}</div>
-                        {writeError.message.includes('reverted') && (
-                          <div className="mt-1 text-yellow-300">
-                            💡 Tip: Try getting testnet tokens first using the faucet above
-                          </div>
-                        )}
-                        {writeError.message.includes('faucet') && (
-                          <div className="mt-1 text-blue-300">
-                            ℹ️ Faucet may have daily limits. Try again later or use a different token.
-                          </div>
-                        )}
+
                       </div>
                     )}
                     {isWritePending && (
