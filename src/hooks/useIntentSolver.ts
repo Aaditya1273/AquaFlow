@@ -2,7 +2,8 @@
 // Pure client-side logic, no backend dependencies
 
 import { useState, useCallback, useEffect } from 'react';
-import { useProvider, useAccount } from 'wagmi';
+import { usePublicClient, useAccount } from 'wagmi';
+import { publicClientToProvider } from '@/lib/ethers';
 import { IntentParser, ParsedIntent } from '@/utils/intentParser';
 import { RouteOptimizer, OptimalRoute, RouteOptions } from '@/utils/routeOptimizer';
 
@@ -24,7 +25,7 @@ export interface IntentSolverResult {
 }
 
 export function useIntentSolver(): IntentSolverResult {
-  const provider = useProvider();
+  const publicClient = usePublicClient();
   const { address, isConnected } = useAccount();
   
   const [state, setState] = useState<IntentSolverState>({
@@ -39,15 +40,16 @@ export function useIntentSolver(): IntentSolverResult {
   
   const [routeOptimizer, setRouteOptimizer] = useState<RouteOptimizer | null>(null);
   
-  // Initialize route optimizer when provider is available
+  // Initialize route optimizer when publicClient is available
   useEffect(() => {
-    if (provider) {
-      const optimizer = new RouteOptimizer(provider, 42161); // Arbitrum One
+    if (publicClient) {
+      const ethersProvider = publicClientToProvider(publicClient);
+      const optimizer = new RouteOptimizer(ethersProvider, 42161); // Arbitrum One
       optimizer.loadPoolData().then(() => {
         setRouteOptimizer(optimizer);
       });
     }
-  }, [provider]);
+  }, [publicClient]);
   
   /**
    * Solve intent: parse natural language and find optimal route
