@@ -32,7 +32,7 @@ export function NetworkIndicator() {
     {
       icon: <Clock className="h-4 w-4" />,
       label: 'Speed',
-      value: chainInfo.finality,
+      value: getSpeedLevel(currentChainId),
       color: 'text-blue-400',
       description: 'How fast transactions complete',
     },
@@ -149,6 +149,16 @@ function getEfficiencyLevel(chainId: number): string {
   return levels[chainId] || 'Optimized';
 }
 
+function getSpeedLevel(chainId: number): string {
+  const levels: Record<number, string> = {
+    42161: 'Fast',
+    42170: 'Ultra-Fast',
+    421337: 'Lightning',
+    421614: 'Standard',
+  };
+  return levels[chainId] || 'Fast';
+}
+
 // Compact version for header
 export function CompactNetworkIndicator() {
   const { currentChainId, chainInfo } = useChainDetection();
@@ -172,7 +182,7 @@ export function CompactNetworkIndicator() {
       </span>
       <span className="text-xs text-gray-400">•</span>
       <span className="text-xs text-gray-300">
-        {chainInfo.finality}
+        {getSpeedLevel(currentChainId)}
       </span>
     </motion.div>
   );
