@@ -11,6 +11,7 @@ import { Card } from '@/components/ui/Card';
 import { formatNumber, formatTime } from '@/lib/utils';
 import { toast } from 'react-hot-toast';
 import { initializeAI, getAI, type SwapIntent, type GeminiResponse } from '@/lib/gemini';
+import { type RouteOptions } from '@/utils/routeOptimizer';
 
 interface Message {
   id: string;
@@ -126,7 +127,12 @@ export function ChatInterface() {
           }
           
           // Solve the intent using AI-parsed data
-          await solveIntent(intentText, aiResponse.intent);
+          // Convert SwapIntent to RouteOptions
+          const routeOptions: Partial<RouteOptions> = {
+            maxPriceImpact: aiResponse.intent.slippageTolerance || 0.5,
+            prioritizeOutput: true,
+          };
+          await solveIntent(intentText, routeOptions);
           
           if (solverState.optimalRoute) {
             // Add route details
