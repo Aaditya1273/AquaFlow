@@ -14,9 +14,9 @@ interface NetworkBenefit {
 }
 
 export function NetworkIndicator() {
-  const { currentChain, chainInfo } = useChainDetection();
+  const { currentChainId, chainInfo } = useChainDetection();
   
-  if (!currentChain || !chainInfo) {
+  if (!currentChainId || !chainInfo) {
     return null;
   }
   
@@ -39,14 +39,14 @@ export function NetworkIndicator() {
     {
       icon: <Shield className="h-4 w-4" />,
       label: 'Security',
-      value: getSecurityLevel(currentChain.id),
+      value: getSecurityLevel(currentChainId),
       color: 'text-purple-400',
       description: 'Protection level for your funds',
     },
     {
       icon: <Zap className="h-4 w-4" />,
       label: 'Efficiency',
-      value: getEfficiencyLevel(currentChain.id),
+      value: getEfficiencyLevel(currentChainId),
       color: 'text-yellow-400',
       description: 'How optimized the network is',
     },
@@ -66,7 +66,7 @@ export function NetworkIndicator() {
             style={{ backgroundColor: chainInfo.color }}
           />
           <span className="text-sm font-medium text-white">
-            Connected to {getNetworkDisplayName(currentChain.id)}
+            Connected to {getNetworkDisplayName(currentChainId)}
           </span>
         </div>
         
@@ -151,9 +151,9 @@ function getEfficiencyLevel(chainId: number): string {
 
 // Compact version for header
 export function CompactNetworkIndicator() {
-  const { currentChain, chainInfo } = useChainDetection();
+  const { currentChainId, chainInfo } = useChainDetection();
   
-  if (!currentChain || !chainInfo) {
+  if (!currentChainId || !chainInfo) {
     return null;
   }
   
