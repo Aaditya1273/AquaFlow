@@ -173,20 +173,6 @@ const nextConfig = {
     ];
   },
   
-  // Server components external packages
-  serverComponentsExternalPackages: [
-    'pino',
-    'thread-stream',
-    '@walletconnect/universal-provider',
-    '@walletconnect/ethereum-provider',
-    '@rainbow-me/rainbowkit',
-    'wagmi',
-    'tap',
-    'fastbench',
-    'desm',
-    'pino-elasticsearch'
-  ],
-  
   // Experimental features
   experimental: {
     scrollRestoration: true,
