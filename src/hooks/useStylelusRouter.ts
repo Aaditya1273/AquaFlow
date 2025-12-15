@@ -2,7 +2,7 @@
 // Handles contract calls, gas estimation, and transaction execution
 
 import { useState, useCallback, useEffect } from 'react';
-import { useContractRead, useContractWrite, useWaitForTransaction, useAccount } from 'wagmi';
+import { useReadContract, useWriteContract, useWaitForTransactionReceipt, useAccount } from 'wagmi';
 import { ethers } from 'ethers';
 import { OptimalRoute } from '@/utils/routeOptimizer';
 import { ParsedIntent } from '@/utils/intentParser';
@@ -57,24 +57,20 @@ export function useStylelusRouter(): StylelusRouterResult {
   });
   
   // Contract write hook for executing intents
-  const { writeAsync: executeIntentWrite } = useContractWrite({
-    address: SOLIDITY_WRAPPER_ADDRESS,
-    abi: WRAPPER_ABI,
-    functionName: 'executeIntent',
-  });
+  const { writeContractAsync: executeIntentWrite } = useWriteContract();
   
   // Contract read hook for quotes
-  const { refetch: refetchQuote } = useContractRead({
+  const { refetch: refetchQuote } = useReadContract({
     address: SOLIDITY_WRAPPER_ADDRESS,
     abi: WRAPPER_ABI,
     functionName: 'getQuote',
-    enabled: false,
+    query: { enabled: false },
   });
   
   // Transaction receipt hook
-  const { data: receipt, isLoading: isWaitingForTx } = useWaitForTransaction({
+  const { data: receipt, isLoading: isWaitingForTx } = useWaitForTransactionReceipt({
     hash: state.txHash as `0x${string}` | undefined,
-    enabled: !!state.txHash,
+    query: { enabled: !!state.txHash },
   });
   
   // Update receipt when transaction is mined
@@ -137,6 +133,9 @@ export function useStylelusRouter(): StylelusRouterResult {
       
       // Execute through Solidity wrapper (which calls Stylus router)
       const tx = await executeIntentWrite({
+        address: SOLIDITY_WRAPPER_ADDRESS,
+        abi: WRAPPER_ABI,
+        functionName: 'executeIntent',
         args: [
           tokenInAddress,
           tokenOutAddress,
