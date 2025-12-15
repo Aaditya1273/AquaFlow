@@ -1,0 +1,116 @@
+# Vercel ignore file - files to exclude from deployment
+
+# Development files
+*.md
+!README.md
+!IMPLEMENTATION-STATUS.md
+docs/
+help.md
+stylus.md
+unique.md
+
+# Contract development files
+contracts/
+hardhat.config.js
+deploy-*.js
+check-*.js
+
+# Local environment files
+.env.local
+.env.development
+.env.test
+
+# Development scripts
+scripts/
+test/
+
+# Documentation that's not needed in production
+DEPLOYMENT_CHECKLIST.md
+SECURITY.md
+
+# Orbit demo (not needed for main deployment)
+orbit-demo/
+
+# Large assets that aren't used
+public/assets/unused/
+
+# Backup files
+*.backup
+*.bak
+*.old
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Cache directories
+.cache/
+.next/cache/
+
+# Test files
+*.test.js
+*.test.ts
+*.spec.js
+*.spec.ts
+__tests__/
+test-results/
+
+# Coverage reports
+coverage/
+.nyc_output/
+
+# Storybook
+.storybook/
+storybook-static/
+
+# Playwright
+playwright-report/
+playwright/.cache/
+
+# Rust/Stylus build artifacts
+target/
+Cargo.lock
+*.wasm
+
+# Hardhat artifacts
+cache/
+artifacts/
+typechain-types/
+
+# Foundry artifacts
+out_forge/
+cache_forge/
+
+# Deployment artifacts that shouldn't be in production
+deployments/
+broadcast/
+
+# Local development configs
+local-config.json
+dev-config.json
+
+# Performance monitoring
+.clinic/
+
+# Temporary Next.js files that might cause issues
+.next/static/chunks/pages/
+.next/static/chunks/webpack/
+
+# Source maps (optional - remove if you want them in production)
+# *.map
+
+# TypeScript build info
+*.tsbuildinfo

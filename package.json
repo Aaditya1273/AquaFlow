@@ -6,7 +6,14 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "deploy": "vercel --prod",
+    "deploy:preview": "vercel",
+    "build:analyze": "ANALYZE=true next build",
+    "clean": "rm -rf .next out dist",
+    "type-check": "tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
