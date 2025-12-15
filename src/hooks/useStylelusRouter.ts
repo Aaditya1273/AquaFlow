@@ -145,9 +145,9 @@ export function useStylelusRouter(): StylelusRouterResult {
         ],
       });
       
-      setState(prev => ({ ...prev, txHash: tx.hash }));
+      setState(prev => ({ ...prev, txHash: tx }));
       
-      console.log('✅ Transaction submitted:', tx.hash);
+      console.log('✅ Transaction submitted:', tx);
       
     } catch (error) {
       console.error('❌ Intent execution failed:', error);

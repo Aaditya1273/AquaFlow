@@ -187,7 +187,7 @@ export class IntentParser {
         action: 'swap',
         tokenIn: tokens[0],
         tokenOut: tokens[1],
-        amount: numbers[0],
+        amount: numbers[0]!,
         amountType: 'exact_in',
         confidence: 0.3, // Low confidence fallback
       };

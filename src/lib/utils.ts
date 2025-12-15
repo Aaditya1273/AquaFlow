@@ -114,7 +114,7 @@ export const validate = {
   isValidAmount: (amount: string, decimals: number): boolean => {
     if (!validate.isNumber(amount)) return false;
     const parts = amount.split('.');
-    return parts.length === 1 || (parts[1] && parts[1].length <= decimals);
+    return parts.length === 1 || (parts[1] ? parts[1].length <= decimals : false);
   },
 };
 
