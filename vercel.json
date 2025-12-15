@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm run build",
+  "buildCommand": "NEXT_PRIVATE_DISABLE_TURBOPACK=1 npm run build",
   "installCommand": "npm install --legacy-peer-deps",
   "functions": {
     "app/api/**/*.ts": {

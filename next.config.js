@@ -27,13 +27,59 @@ const nextConfig = {
   
   // Webpack configuration
   webpack: (config, { dev, isServer }) => {
-    // External dependencies
-    config.externals.push('pino-pretty', 'lokijs', 'encoding');
+    // Ignore problematic modules completely
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      'thread-stream/test': false,
+      'pino/test': false,
+      'tap': false,
+      'fastbench': false,
+      'desm': false,
+      'pino-elasticsearch': false,
+    };
     
-    // Resolve fallbacks
+    // External dependencies for server-side
+    if (isServer) {
+      config.externals.push(
+        'pino-pretty', 
+        'lokijs', 
+        'encoding',
+        'pino',
+        'thread-stream',
+        '@walletconnect/universal-provider',
+        '@walletconnect/ethereum-provider',
+        'tap',
+        'fastbench',
+        'desm',
+        'pino-elasticsearch'
+      );
+    }
+    
+    // Client-side externals
+    if (!isServer) {
+      config.externals.push(
+        'pino-pretty', 
+        'lokijs', 
+        'encoding',
+        'pino',
+        'thread-stream',
+        'tap',
+        'fastbench',
+        'desm',
+        'pino-elasticsearch'
+      );
+    }
+    
+    // Resolve fallbacks for client-side
     config.resolve.fallback = {
       ...config.resolve.fallback,
       '@react-native-async-storage/async-storage': false,
+      'pino': false,
+      'thread-stream': false,
+      'tap': false,
+      'fastbench': false,
+      'desm': false,
+      'pino-elasticsearch': false,
       fs: false,
       net: false,
       tls: false,
@@ -127,8 +173,19 @@ const nextConfig = {
     ];
   },
   
-  // Turbopack configuration for Next.js 16
-  turbopack: {},
+  // Server components external packages
+  serverComponentsExternalPackages: [
+    'pino',
+    'thread-stream',
+    '@walletconnect/universal-provider',
+    '@walletconnect/ethereum-provider',
+    '@rainbow-me/rainbowkit',
+    'wagmi',
+    'tap',
+    'fastbench',
+    'desm',
+    'pino-elasticsearch'
+  ],
   
   // Experimental features
   experimental: {
