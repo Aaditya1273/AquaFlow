@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm run build -- --turbopack",
+  "buildCommand": "npm run build",
   "installCommand": "npm install --legacy-peer-deps",
   "functions": {
     "app/api/**/*.ts": {
