@@ -9,11 +9,20 @@ help.md
 stylus.md
 unique.md
 
-# Contract development files
+# Contract development files (exclude from deployment)
 contracts/
 hardhat.config.js
 deploy-*.js
 check-*.js
+
+# Hardhat artifacts
+cache/
+artifacts/
+typechain-types/
+
+# Node modules that might cause conflicts
+node_modules/@nomicfoundation/
+node_modules/hardhat/
 
 # Local environment files
 .env.local
