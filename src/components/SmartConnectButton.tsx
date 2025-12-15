@@ -32,13 +32,10 @@ export default function SmartConnectButton({
     if (isConnected && !isArbitrumNetwork && showNetworkWarning && chainId) {
       const timer = setTimeout(() => {
         toast.error(
-          'Please switch to Arbitrum for the best AquaFlow experience',
+          'Please switch to Arbitrum for the best AquaFlow experience. Click here to switch!',
           {
             duration: 5000,
-            action: {
-              label: 'Switch Network',
-              onClick: () => handleSwitchToArbitrum(),
-            },
+            onClick: () => handleSwitchToArbitrum(),
           }
         );
       }, 1000);

@@ -187,7 +187,7 @@ dev-config.json
 
 # Storybook
 storybook-static/
-
+next_problem.md
 # Temporary Next.js files
 .next/static/chunks/
 .next/cache/
