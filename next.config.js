@@ -127,6 +127,17 @@ const nextConfig = {
     ];
   },
   
+  // Turbopack configuration for Next.js 16
+  turbopack: {
+    resolveAlias: {
+      '@react-native-async-storage/async-storage': false,
+      'pino-pretty': false,
+      'lokijs': false,
+      'encoding': false,
+    },
+    resolveExtensions: ['.tsx', '.ts', '.jsx', '.js', '.json'],
+  },
+  
   // Experimental features
   experimental: {
     scrollRestoration: true,
